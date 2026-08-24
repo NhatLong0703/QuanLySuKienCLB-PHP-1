@@ -107,9 +107,8 @@
                 const el = document.getElementById('notifList');
                 el.innerHTML = '';
 
-                // Assume the API might return all notifications or we just filter those intended for the user or global.
                 // For a robust system, the API should handle this. Let's just render the response.
-                const notifications = res.data || [];
+                const notifications = res.data.data || [];
                 
                 if (notifications.length === 0) {
                     el.innerHTML = `

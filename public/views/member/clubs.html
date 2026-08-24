@@ -95,7 +95,7 @@
                 const el = document.getElementById('clubList'); 
                 el.innerHTML = '';
                 
-                const clubs = res.data;
+                const clubs = res.data.data || [];
                 if(clubs.length === 0) {
                     el.innerHTML = '<p style="color:#9CA3AF; font-size:14px; grid-column: 1/-1;">No clubs available.</p>';
                     return;

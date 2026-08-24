@@ -39,6 +39,8 @@ class BaseController {
         $token = '';
         if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
             $token = $_SERVER['HTTP_AUTHORIZATION'];
+        } elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $token = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
         } elseif (function_exists('getallheaders')) {
             $headers = getallheaders();
             $token = $headers['Authorization'] ?? '';
