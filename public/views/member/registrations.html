@@ -231,38 +231,46 @@
                 const evDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute:'2-digit' });
                 
                 let badgeClass = 'badge-registered';
+                let uiStatusText = item.registration_status;
                 if(item.registration_status === 'cancelled') badgeClass = 'badge-cancelled';
                 if(item.registration_status === 'attended') badgeClass = 'badge-attended';
+                if(item.registration_status === 'pending_verification') {
+                    badgeClass = 'badge-registered';
+                    uiStatusText = 'pending verify';
+                }
 
                 // Can cancel if it's currently "registered" and event is not passed yet
                 const isUpcoming = (new Date() < new Date(item.start_time));
                 const isCompleted = item.event_status === 'closed' || (new Date() > new Date(item.end_time));
                 
                 const canCancel = item.registration_status === 'registered' && isUpcoming;
+                const canCheckIn = item.registration_status === 'registered' && !isCompleted;
                 const canShowQR = item.registration_status === 'registered' && !isCompleted;
-                const canRate = (item.registration_status === 'attended' || isCompleted) && item.registration_status !== 'cancelled';
+                const canRate = (item.registration_status === 'attended' || isCompleted) && item.registration_status !== 'cancelled' && item.registration_status !== 'pending_verification';
                 const canCert = item.registration_status === 'attended';
                 
                 let actionHtml = '';
+                if (canCheckIn) actionHtml += `<button class="btn-qr" style="background-color:#DBEAFE;" onclick="selfCheckIn(${item.registration_id})">Self Check-in</button> `;
                 if (canShowQR) actionHtml += `<button class="btn-qr" onclick="showQR(${item.registration_id})">Show QR</button> `;
-                if (canCancel) actionHtml += `<button class="btn-cancel" onclick="cancelReg(${item.registration_id}, ${item.event_id})">Cancel</button>`;
-                if (canRate) actionHtml += `<button class="btn-rate" onclick="openRateModal(${item.event_id})">Rate Event</button>`;
-                if (canCert) actionHtml += `<button class="btn-qr" style="background-color:#10B981;" onclick="downloadCert('${item.event_title.replace(/'/g, "\\'")}', '${evDate}')">Giấy Chứng Nhận</button> `;
+                if (canCancel) actionHtml += `<button class="btn-cancel" onclick="cancelReg(${item.registration_id}, ${item.event_id})">Cancel</button> `;
+                if (canRate) actionHtml += `<button class="btn-rate" onclick="openRateModal(${item.event_id})">Rate Event</button> `;
+                if (canCert) actionHtml += `<button class="btn-qr" style="background-color:#10B981; color:white; border:none;" onclick="downloadCert('${item.title.replace(/'/g, "\\'")}', '${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}')">Giấy Chứng Nhận</button> `;
                 
-                if (!actionHtml) actionHtml = `<span style="color:#D1D5DB; font-size:12px;">No Action</span>`;
-
                 html += `
                 <tr>
-                    <td style="color:#6B7280; font-family:monospace;">${regDate}</td>
+                    <td>
+                        <div style="font-weight:500;">${regDate}</div>
+                    </td>
                     <td>
                         <div class="event-title">${item.title}</div>
-                        <div class="event-club">${item.club_name || 'General Event'}</div>
+                        <div class="event-club">${item.location}</div>
                     </td>
-                    <td>${evDate}</td>
-                    <td><span class="badge ${badgeClass}">${item.registration_status}</span></td>
-                    <td style="text-align:right">
-                        ${actionHtml}
+                    <td>
+                        <div style="font-weight:500;">${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                        <div style="font-size:12px; color:#6B7280;">${d.toLocaleTimeString('en-US', { hour: '2-digit', minute:'2-digit' })}</div>
                     </td>
+                    <td><span class="badge ${badgeClass}">${uiStatusText}</span></td>
+                    <td style="text-align:right">${actionHtml}</td>
                 </tr>`;
             });
             tbody.innerHTML = html;
@@ -308,14 +316,27 @@
         }
 
         async function cancelReg(regId, eventId) {
-            if(!confirm('Are you sure you want to cancel this registration?')) return;
+            if(!confirm('Are you sure you want to cancel your registration?')) return;
             try {
-                await apiCall('/registration/cancel', 'POST', { registration_id: regId, event_id: eventId });
-                alert('Successfully cancelled!');
-                loadData(getUser().id);
-            } catch (err) {
-                alert('Error: ' + err.message);
-            }
+                const res = await apiCall('/registration/cancel', {
+                    method: 'POST',
+                    body: JSON.stringify({ registration_id: regId, event_id: eventId })
+                });
+                alert('Registration cancelled successfully');
+                init();
+            } catch(e) { alert(e.message); }
+        }
+
+        async function selfCheckIn(regId) {
+            if(!confirm('Confirm your self check-in? The organizer will verify this.')) return;
+            try {
+                const res = await apiCall('/registration/selfCheckIn', {
+                    method: 'POST',
+                    body: JSON.stringify({ registration_id: regId })
+                });
+                alert('Check-in submitted! Waiting for organizer verification.');
+                init();
+            } catch(e) { alert(e.message); }
         }
 
         // Certificate Logic
@@ -358,7 +379,7 @@
                     </div>
                     <script>
                         window.onload = function() { window.print(); }
-                    </script>
+                    <\/script>
                 </body>
                 </html>
             `);

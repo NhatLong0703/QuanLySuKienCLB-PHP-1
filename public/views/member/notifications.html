@@ -84,6 +84,21 @@
             <p style="color:#9CA3AF; font-size: 14px;">Loading notifications...</p>
         </div>
     </div>
+    
+    <!-- Notification Details Modal -->
+    <div class="modal-overlay" id="notifDetailModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+        <div class="modal" style="background:white; border-radius:12px; width:450px; max-width:90%; padding:24px; box-shadow:0 10px 25px rgba(0,0,0,0.1);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+                <h2 id="modalNotifTitle" style="font-family:'Playfair Display', serif; font-size:22px; color:#111827;">Title</h2>
+                <button onclick="document.getElementById('notifDetailModal').style.display='none'" style="background:none; border:none; font-size:20px; color:#6B7280; cursor:pointer;">&times;</button>
+            </div>
+            <p id="modalNotifTime" style="font-size:12px; color:#6B7280; margin-bottom:16px;"></p>
+            <div id="modalNotifContent" style="font-size:14px; color:#374151; line-height:1.6; padding:16px; background:#F9FAFB; border-radius:8px; border:1px solid #F3F4F6;"></div>
+            <div style="margin-top:20px; text-align:right;">
+                <button onclick="document.getElementById('notifDetailModal').style.display='none'" style="padding:8px 16px; background:#10B981; color:white; border:none; border-radius:6px; cursor:pointer;">Đóng</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         async function init() {
@@ -141,11 +156,11 @@
                     }
 
                     html += `
-                    <div class="notification-card ${typeClass}">
+                    <div class="notification-card ${typeClass}" style="cursor:pointer;" onclick="showNotificationDetails('${n.title.replace(/'/g, "\\'")}', '${(n.content || '').replace(/'/g, "\\'").replace(/\n/g, '<br>')}', '${dateStr} at ${timeStr}')">
                         <div class="notif-icon">${iconHtml}</div>
                         <div class="notif-content">
                             <div class="notif-title">${n.title}</div>
-                            <div class="notif-message">${n.message}</div>
+                            <div class="notif-message">${n.content}</div>
                             <div class="notif-meta">
                                 <span>📅 ${dateStr} at ${timeStr}</span>
                             </div>
@@ -154,10 +169,16 @@
                 });
                 
                 el.innerHTML = html;
-
-            } catch (err) {
-                document.getElementById('notifList').innerHTML = `<p style="color:red;">Error loading notifications: ${err.message}</p>`;
+            } catch (e) {
+                document.getElementById('notifList').innerHTML = `<p style="color:red; font-size: 14px;">Lỗi: ${e.message}</p>`;
             }
+        }
+        
+        function showNotificationDetails(title, content, time) {
+            document.getElementById('modalNotifTitle').innerText = title;
+            document.getElementById('modalNotifTime').innerText = time;
+            document.getElementById('modalNotifContent').innerHTML = content;
+            document.getElementById('notifDetailModal').style.display = 'flex';
         }
 
         init();

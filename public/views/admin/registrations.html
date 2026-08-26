@@ -154,17 +154,19 @@
                 <form id="regForm" onsubmit="saveReg(event)">
                     <input type="hidden" id="regId">
                     <div class="form-group" id="groupEvent">
-                        <label>Event ID</label>
-                        <input type="text" id="rEventId" class="form-control" placeholder="Enter Event ID" required>
+                        <label>Event</label>
+                        <select id="rEventId" class="form-control" required></select>
                     </div>
                     <div class="form-group" id="groupUser">
-                        <label>User ID</label>
-                        <input type="text" id="rUserId" class="form-control" placeholder="Enter User ID" required>
+                        <label>User (Member)</label>
+                        <select id="rUserId" class="form-control" required></select>
                     </div>
                     <div class="form-group" id="groupStatus">
                         <label>Status</label>
                         <select id="rStatus" class="form-control">
                             <option value="registered">Registered</option>
+                            <option value="pending_verification">Pending Verification</option>
+                            <option value="attended">Attended</option>
                             <option value="cancelled">Cancelled</option>
                         </select>
                     </div>
@@ -190,6 +192,8 @@
         let allRegs = [];
         let currentFilter = 'all';
         let searchQuery = '';
+        let allUsers = [];
+        let allEvents = [];
 
         async function init() {
             const u = getUser();
@@ -200,7 +204,19 @@
                     <div class="user-info">${u.full_name}<span>Administrator</span></div>
                 `;
             }
+            await loadDependencies();
             await loadData();
+        }
+
+        async function loadDependencies() {
+            try {
+                const uRes = await apiCall('/user/list?limit=-1');
+                allUsers = uRes.data.data || [];
+                const eRes = await apiCall('/event/index?limit=-1');
+                allEvents = eRes.data.data || [];
+            } catch(e) {
+                console.error("Failed to load dependencies", e);
+            }
         }
 
         async function loadData() {
@@ -253,7 +269,13 @@
                 
                 const regDate = new Date(item.registered_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 
-                const badgeClass = item.status === 'registered' ? 'badge-registered' : 'badge-cancelled';
+                const badgeClass = item.status === 'registered' ? 'badge-registered' : 
+                                   item.status === 'cancelled' ? 'badge-cancelled' : 
+                                   item.status === 'pending_verification' ? 'badge-registered' : 'badge-attended';
+                let verifyBtnHtml = '';
+                if (item.status === 'pending_verification') {
+                    verifyBtnHtml = `<button class="btn btn-primary" style="padding:4px 8px; font-size:12px; margin-right:5px; background:#10B981;" onclick="verifyAtt(${item.id})">Verify</button>`;
+                }
 
                 html += `
                 <tr>
@@ -266,6 +288,7 @@
                     <td style="color:#4B5563;">${regDate}</td>
                     <td><span class="badge ${badgeClass}">${item.status}</span></td>
                     <td style="text-align:right">
+                        ${verifyBtnHtml}
                         <button class="btn btn-outline" style="padding:4px 8px; font-size:12px;" onclick="openModal(${item.id})">✏️</button>
                         <button class="btn btn-outline" style="padding:4px 8px; font-size:12px; color:#991B1B; border-color:#FEE2E2;" onclick="deleteReg(${item.id})">🗑️</button>
                     </td>
@@ -286,6 +309,14 @@
         // CRUD Logic
         function openModal(id = null) {
             document.getElementById('regModal').style.display = 'flex';
+            
+            // Populate Dropdowns
+            const uSelect = document.getElementById('rUserId');
+            uSelect.innerHTML = '<option value="">-- Select Member --</option>' + allUsers.map(u => `<option value="${u.id}">${u.full_name} (${u.email})</option>`).join('');
+            
+            const eSelect = document.getElementById('rEventId');
+            eSelect.innerHTML = '<option value="">-- Select Event --</option>' + allEvents.map(e => `<option value="${e.id}">${e.title}</option>`).join('');
+            
             if (id) {
                 document.getElementById('modalTitle').innerText = 'Edit Registration Status';
                 const item = allRegs.find(c => c.id === id);
@@ -348,6 +379,20 @@
             try {
                 await apiCall('/registration/delete?id=' + id, 'DELETE');
                 alert('Deleted successfully');
+                loadData();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function verifyAtt(id) {
+            if(!confirm('Mark this member as Attended?')) return;
+            try {
+                await apiCall('/registration/verifyAttendance', {
+                    method: 'POST',
+                    body: JSON.stringify({ registration_id: id })
+                });
+                alert('Verified successfully');
                 loadData();
             } catch (err) {
                 alert('Error: ' + err.message);

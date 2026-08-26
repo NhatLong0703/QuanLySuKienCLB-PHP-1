@@ -145,13 +145,13 @@
             <div class="modal-body">
                 <form id="attForm" onsubmit="saveAtt(event)">
                     <input type="hidden" id="attId">
-                    <div class="form-group" id="groupRegId">
-                        <label>Registration ID</label>
-                        <input type="text" id="aRegId" class="form-control" placeholder="Enter Registration ID" required>
+                    <div class="form-group" id="groupEventId">
+                        <label>Event</label>
+                        <select id="aEventId" class="form-control" required></select>
                     </div>
-                    <div class="form-group" id="groupCheckInBy">
-                        <label>Checked In By (User ID)</label>
-                        <input type="text" id="aCheckInBy" class="form-control" placeholder="Optional User ID">
+                    <div class="form-group" id="groupUserId">
+                        <label>Member</label>
+                        <select id="aUserId" class="form-control" required></select>
                     </div>
                     <div class="form-group" id="groupCheckInAt">
                         <label>Checked In At</label>
@@ -187,6 +187,9 @@
     <script>
         const colors = ['#B45309', '#1D4ED8', '#047857', '#6D28D9', '#BE123C'];
         let allAtts = [];
+        let allRegs = [];
+        let allEvents = [];
+        let allUsers = [];
         let currentFilter = 'all';
         let searchQuery = '';
 
@@ -199,7 +202,19 @@
                     <div class="user-info">${u.full_name}<span>Administrator</span></div>
                 `;
             }
+            await loadDependencies();
             await loadData();
+        }
+
+        async function loadDependencies() {
+            try {
+                const rRes = await apiCall('/registration/all');
+                allRegs = rRes.data || [];
+                const eRes = await apiCall('/event/index?limit=-1');
+                allEvents = eRes.data.data || [];
+                const uRes = await apiCall('/user/list?limit=-1');
+                allUsers = uRes.data.data || [];
+            } catch(e) { console.error("Failed to load dependencies", e); }
         }
 
         async function loadData() {
@@ -281,12 +296,29 @@
         // CRUD Logic
         function openModal(id = null) {
             document.getElementById('attModal').style.display = 'flex';
+            
+            // Populate Dropdowns
+            const eSelect = document.getElementById('aEventId');
+            eSelect.innerHTML = '<option value="">-- Select Event --</option>' + allEvents.map(e => `<option value="${e.id}">${e.title}</option>`).join('');
+
+            const uSelect = document.getElementById('aUserId');
+            uSelect.innerHTML = '<option value="">-- Select Member --</option>' + allUsers.map(u => `<option value="${u.id}">${u.full_name} (${u.email})</option>`).join('');
+
             if (id) {
                 document.getElementById('modalTitle').innerText = 'Edit Attendance Record';
                 const item = allAtts.find(c => c.id === id);
                 document.getElementById('attId').value = item.id;
-                document.getElementById('aRegId').value = item.registration_id;
-                document.getElementById('aCheckInBy').value = item.checked_in_by || '';
+                
+                // Find corresponding registration
+                const reg = allRegs.find(r => r.id == item.registration_id);
+                if (reg) {
+                    document.getElementById('aEventId').value = reg.event_id;
+                    document.getElementById('aUserId').value = reg.user_id;
+                } else {
+                    document.getElementById('aEventId').value = '';
+                    document.getElementById('aUserId').value = '';
+                }
+                
                 document.getElementById('aCheckInAt').value = toDateTimeLocal(item.checked_in_at);
                 document.getElementById('aNote').value = item.note || '';
             } else {
@@ -306,9 +338,17 @@
             const id = document.getElementById('attId').value;
             const formatDT = val => val ? val.replace('T', ' ') + ':00' : null;
 
+            const eventId = document.getElementById('aEventId').value;
+            const userId = document.getElementById('aUserId').value;
+            
+            const reg = allRegs.find(r => r.event_id == eventId && r.user_id == userId);
+            if (!reg) {
+                alert("This member has not registered for this event! Please add their registration first.");
+                return;
+            }
+
             const data = {
-                registration_id: document.getElementById('aRegId').value,
-                checked_in_by: document.getElementById('aCheckInBy').value || null,
+                registration_id: reg.id,
                 checked_in_at: formatDT(document.getElementById('aCheckInAt').value),
                 note: document.getElementById('aNote').value
             };

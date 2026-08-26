@@ -246,8 +246,8 @@
             
             // load clubs for select dropdown
             try {
-                const cres = await apiCall('/club/index');
-                clubsList = cres.data;
+                const cres = await apiCall('/club/index?limit=-1');
+                clubsList = cres.data.data || [];
                 const select = document.getElementById('evClub');
                 select.innerHTML = '<option value="">-- Select Club --</option>' + clubsList.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
             } catch(e) {}
@@ -333,8 +333,8 @@
                 const deadlineStr = deadlineDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 
                 let badgeClass = 'badge-upcoming';
-                if(item.ui_status === 'completed') badgeClass = 'badge-completed';
-                if(item.ui_status === 'cancelled') badgeClass = 'badge-cancelled';
+                if(item.status === 'closed') badgeClass = 'badge-completed';
+                if(item.status === 'cancelled') badgeClass = 'badge-cancelled';
                 
                 const registered = item.capacity - item.slots_left;
                 const percent = item.capacity > 0 ? Math.min(100, Math.round((registered / item.capacity) * 100)) : 0;
@@ -365,7 +365,7 @@
                             <span class="capacity-text">${registered}/${item.capacity}</span>
                         </div>
                     </td>
-                    <td><span class="badge ${badgeClass}">${item.ui_status}</span></td>
+                    <td><span class="badge ${badgeClass}">${(item.status || '').toUpperCase()}</span></td>
                     <td style="text-align:right">
                         <button class="btn btn-outline" style="padding:4px 8px; font-size:12px;" onclick="viewFeedback(${item.id})">⭐</button>
                         <button class="btn btn-outline" style="padding:4px 8px; font-size:12px;" onclick="openModal(${item.id})">✏️</button>

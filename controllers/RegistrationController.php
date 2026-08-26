@@ -60,6 +60,35 @@ class RegistrationController extends BaseController {
         $data = $this->regRepo->getMyRegistrations($_GET['user_id']??0);
         return $this->json(['status'=>'success','data'=>$data]);
     }
+
+    // POST /api/registration/selfCheckIn
+    public function selfCheckIn() {
+        if ($_SERVER['REQUEST_METHOD']!=='POST') return $this->json(['message'=>'Method Not Allowed'],405);
+        $user = $this->requireCurrentUser();
+        $d = $this->getJsonInput();
+        if (empty($d['registration_id'])) return $this->json(['status'=>'error','message'=>'Thieu thong tin'],400);
+        $this->regRepo->update($d['registration_id'], ['status' => 'pending_verification']);
+        $this->logAudit($user['id'], 'Self Check-in', 'registrations', $d['registration_id'], 'Member requested check-in for registration ID: ' . $d['registration_id']);
+        return $this->json(['status'=>'success','message'=>'Check-in submitted! Waiting for verification.']);
+    }
+
+    // POST /api/registration/verifyAttendance
+    public function verifyAttendance() {
+        if ($_SERVER['REQUEST_METHOD']!=='POST') return $this->json(['message'=>'Method Not Allowed'],405);
+        $user = $this->requireCurrentUser();
+        if ($user['role'] !== 'admin' && $user['role'] !== 'organizer') return $this->json(['status'=>'error','message'=>'Ban khong co quyen'],403);
+        $d = $this->getJsonInput();
+        if (empty($d['registration_id'])) return $this->json(['status'=>'error','message'=>'Thieu thong tin'],400);
+        
+        $this->regRepo->update($d['registration_id'], ['status' => 'attended']);
+        
+        // Optionally insert into attendance table
+        $stmt = $this->regRepo->getDb()->prepare("INSERT INTO attendance (registration_id, checked_in_by, checked_in_at) VALUES (?, ?, NOW())");
+        $stmt->execute([$d['registration_id'], $user['id']]);
+        
+        $this->logAudit($user['id'], 'Verify Attendance', 'registrations', $d['registration_id'], 'Organizer verified attendance for registration ID: ' . $d['registration_id']);
+        return $this->json(['status'=>'success','message'=>'Attendance verified successfully!']);
+    }
     
     // GET /api/registration/all
     public function all() {
