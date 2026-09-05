@@ -138,7 +138,7 @@
                 const initials = u.full_name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
                 document.getElementById('sidebarUser').innerHTML = `
                     <div class="avatar">${initials}</div>
-                    <div class="user-info">${u.full_name}<span>Administrator</span></div>
+                    <div class="user-info">${u.full_name}<span>Quản trị viên</span></div>
                 `;
             }
             await loadData();

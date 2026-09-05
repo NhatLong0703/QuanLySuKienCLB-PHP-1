@@ -1,15 +1,25 @@
 POST: Array
 (
-    [title] => 123444
-    [club_id] => 6
+    [title] => 28.5
+    [club_id] => 10
     [location] => 212
-    [start_time] => 2026-08-19 08:50:00
-    [end_time] => 2026-08-20 08:50:00
-    [capacity] => 1
-    [registration_deadline] => 2026-08-19 08:00:00
-    [status] => draft
+    [start_time] => 2026-09-06 17:27:00
+    [end_time] => 2026-09-11 17:27:00
+    [capacity] => 10
+    [registration_deadline] => 2026-09-06 17:27:00
+    [status] => open
 )
 
 FILES: Array
 (
+    [image] => Array
+        (
+            [name] => Screenshot 2026-09-04 091435.png
+            [full_path] => Screenshot 2026-09-04 091435.png
+            [type] => image/png
+            [tmp_name] => C:\xampp\tmp\php64CA.tmp
+            [error] => 0
+            [size] => 136408
+        )
+
 )

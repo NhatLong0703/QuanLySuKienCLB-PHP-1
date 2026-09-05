@@ -111,7 +111,7 @@
                         ${imgHtml}
                         <div class="club-name">${c.name}</div>
                         <div class="club-desc">${c.description || 'No description provided.'}</div>
-                        <button class="btn-view-events" onclick="location.href='/views/member/events.html'">View Events</button>
+                        <button class="btn-view-events" onclick="location.href='/views/member/events.html?club_id=${c.id}'">View Events</button>
                     </div>`;
                 });
             } catch(e) {

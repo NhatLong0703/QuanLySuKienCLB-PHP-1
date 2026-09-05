@@ -22,7 +22,7 @@ class AttendanceRepository extends BaseRepository {
             FROM attendance a
             JOIN registrations r ON r.id = a.registration_id
             JOIN users u ON u.id = r.user_id
-            JOIN users c ON c.id = a.checked_in_by
+            LEFT JOIN users c ON c.id = a.checked_in_by
             JOIN events e ON e.id = r.event_id
             WHERE r.event_id = :event_id
             ORDER BY a.checked_in_at DESC
@@ -37,7 +37,7 @@ class AttendanceRepository extends BaseRepository {
             FROM attendance a
             JOIN registrations r ON r.id = a.registration_id
             JOIN users u ON u.id = r.user_id
-            JOIN users c ON c.id = a.checked_in_by
+            LEFT JOIN users c ON c.id = a.checked_in_by
             JOIN events e ON e.id = r.event_id
             ORDER BY a.checked_in_at DESC
         ");

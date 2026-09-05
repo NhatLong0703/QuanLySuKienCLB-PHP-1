@@ -159,6 +159,10 @@
                         <label>Member</label>
                         <select id="aUserId" class="form-control" required></select>
                     </div>
+                    <div class="form-group" id="groupCheckInBy">
+                        <label>Checked In By</label>
+                        <select id="aCheckInBy" class="form-control"></select>
+                    </div>
                     <div class="form-group" id="groupCheckInAt">
                         <label>Checked In At</label>
                         <input type="datetime-local" id="aCheckInAt" class="form-control">
@@ -205,7 +209,7 @@
                 const initials = u.full_name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
                 document.getElementById('sidebarUser').innerHTML = `
                     <div class="avatar">${initials}</div>
-                    <div class="user-info">${u.full_name}<span>Administrator</span></div>
+                    <div class="user-info">${u.full_name}<span>Quản trị viên</span></div>
                 `;
             }
             await loadDependencies();
@@ -310,6 +314,9 @@
             const uSelect = document.getElementById('aUserId');
             uSelect.innerHTML = '<option value="">-- Select Member --</option>' + allUsers.map(u => `<option value="${u.id}">${u.full_name} (${u.email})</option>`).join('');
 
+            const cSelect = document.getElementById('aCheckInBy');
+            cSelect.innerHTML = '<option value="">-- Checked In By --</option>' + allUsers.map(u => `<option value="${u.id}">${u.full_name} (${u.email})</option>`).join('');
+
             if (id) {
                 document.getElementById('modalTitle').innerText = 'Edit Attendance Record';
                 const item = allAtts.find(c => c.id === id);
@@ -325,12 +332,14 @@
                     document.getElementById('aUserId').value = '';
                 }
                 
+                document.getElementById('aCheckInBy').value = item.checked_in_by || '';
                 document.getElementById('aCheckInAt').value = toDateTimeLocal(item.checked_in_at);
                 document.getElementById('aNote').value = item.note || '';
             } else {
                 document.getElementById('modalTitle').innerText = 'Add Attendance';
                 document.getElementById('attForm').reset();
                 document.getElementById('attId').value = '';
+                document.getElementById('aCheckInBy').value = '';
                 document.getElementById('aCheckInAt').value = toDateTimeLocal(new Date());
             }
         }
@@ -355,6 +364,7 @@
 
             const data = {
                 registration_id: reg.id,
+                checked_in_by: document.getElementById('aCheckInBy').value || null,
                 checked_in_at: formatDT(document.getElementById('aCheckInAt').value),
                 note: document.getElementById('aNote').value
             };

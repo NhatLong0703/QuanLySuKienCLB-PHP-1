@@ -80,15 +80,37 @@ class RegistrationController extends BaseController {
         $d = $this->getJsonInput();
         if (empty($d['registration_id'])) return $this->json(['status'=>'error','message'=>'Thieu thong tin'],400);
         
-        $this->regRepo->update($d['registration_id'], ['status' => 'attended']);
-        
-        // Optionally insert into attendance table
-        $stmt = $this->regRepo->getDb()->prepare("INSERT INTO attendance (registration_id, checked_in_by, checked_in_at) VALUES (?, ?, NOW())");
+        $reg = $this->regRepo->findById($d['registration_id']);
+        if (!$reg) return $this->json(['status'=>'error','message'=>'Dang ky khong ton tai'],404);
+
+        // First insert into attendance (BEFORE updating status, so trigger passes)
+        // Use INSERT IGNORE to handle cases where attendance record already exists
+        $stmt = $this->regRepo->getDb()->prepare("INSERT IGNORE INTO attendance (registration_id, checked_in_by, checked_in_at) VALUES (?, ?, NOW())");
         $stmt->execute([$d['registration_id'], $user['id']]);
         
+        // Then update registration status to attended
+        $this->regRepo->update($d['registration_id'], ['status' => 'attended']);
+
+        // Create Targeted Notification for the member
+        $regData = $this->regRepo->getDb()->prepare("SELECT r.user_id, r.event_id, e.title FROM registrations r JOIN events e ON e.id = r.event_id WHERE r.id = ?");
+        $regData->execute([$d['registration_id']]);
+        $regRow = $regData->fetch(PDO::FETCH_ASSOC);
+        if ($regRow) {
+            $eventTitle = $regRow['title'];
+            $notiRepo = new NotificationRepository();
+            $notiRepo->create([
+                'event_id'   => $regRow['event_id'],
+                'user_id'    => $regRow['user_id'],
+                'title'      => 'Xac nhan diem danh',
+                'content'    => "Tu diem danh cua ban cho su kien '{$eventTitle}' da duoc Quan ly xac nhan thanh cong!",
+                'created_by' => $user['id']
+            ]);
+        }
+
         $this->logAudit($user['id'], 'Verify Attendance', 'registrations', $d['registration_id'], 'Organizer verified attendance for registration ID: ' . $d['registration_id']);
-        return $this->json(['status'=>'success','message'=>'Attendance verified successfully!']);
+        return $this->json(['status'=>'success','message'=>'Xac nhan diem danh thanh cong!']);
     }
+
     
     // GET /api/registration/all
     public function all() {

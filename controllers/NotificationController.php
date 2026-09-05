@@ -28,9 +28,11 @@ class NotificationController extends BaseController {
 
     // GET /api/notification/list
     public function list() {
+        $user = $this->getCurrentUser();
         $filters = [
             'club_id'  => $_GET['club_id'] ?? null,
             'event_id' => $_GET['event_id'] ?? null,
+            'user_id'  => $user ? $user['id'] : null,
             'page'     => $_GET['page'] ?? 1,
             'limit'    => $_GET['limit'] ?? 5
         ];

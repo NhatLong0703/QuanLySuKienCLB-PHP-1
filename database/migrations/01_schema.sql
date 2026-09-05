@@ -99,12 +99,14 @@ CREATE TABLE IF NOT EXISTS notifications (
     id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     club_id    BIGINT UNSIGNED NULL,
     event_id   BIGINT UNSIGNED NULL,
+    user_id    BIGINT UNSIGNED NULL,
     title      VARCHAR(200)    NOT NULL,
     content    TEXT            NOT NULL,
     created_by BIGINT UNSIGNED NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_noti_club       FOREIGN KEY (club_id)    REFERENCES clubs(id)  ON DELETE CASCADE,
     CONSTRAINT fk_noti_event      FOREIGN KEY (event_id)   REFERENCES events(id) ON DELETE CASCADE,
+    CONSTRAINT fk_noti_target_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_noti_created_by FOREIGN KEY (created_by) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

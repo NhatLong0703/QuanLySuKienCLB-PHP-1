@@ -3,12 +3,13 @@ class NotificationRepository extends BaseRepository {
     
     public function create($data) {
         $stmt = $this->db->prepare("
-            INSERT INTO notifications (club_id, event_id, title, content, created_by)
-            VALUES (:club_id, :event_id, :title, :content, :created_by)
+            INSERT INTO notifications (club_id, event_id, user_id, title, content, created_by)
+            VALUES (:club_id, :event_id, :user_id, :title, :content, :created_by)
         ");
         $stmt->execute([
             'club_id'    => $data['club_id']  ?? null,
             'event_id'   => $data['event_id'] ?? null,
+            'user_id'    => $data['user_id']  ?? null,
             'title'      => $data['title'],
             'content'    => $data['content'],
             'created_by' => $data['created_by']
@@ -27,6 +28,13 @@ class NotificationRepository extends BaseRepository {
         if (!empty($filters['event_id'])) {
             $where[] = "n.event_id = :event_id";
             $params['event_id'] = $filters['event_id'];
+        }
+        if (!empty($filters['user_id'])) {
+            $where[] = "(n.user_id = :user_id OR n.user_id IS NULL)";
+            $params['user_id'] = $filters['user_id'];
+        } else {
+            // If no user_id filter is provided, only show broadcast notifications
+            $where[] = "n.user_id IS NULL";
         }
 
         $whereClause = count($where) > 0 ? "WHERE " . implode(' AND ', $where) : "";

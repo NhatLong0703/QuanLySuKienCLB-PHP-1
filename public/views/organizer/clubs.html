@@ -81,6 +81,12 @@
         .form-control { width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 14px; outline: none; }
         .form-control:focus { border-color: #F59E0B; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1); }
         .modal-footer { padding: 16px 24px; border-top: 1px solid #E5E7EB; display: flex; justify-content: flex-end; gap: 12px; background: #F9FAFB; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
+
+        /* Pagination */
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 24px; padding-bottom: 24px; }
+        .page-btn { padding: 6px 12px; border: 1px solid #E5E7EB; background: white; border-radius: 4px; font-size: 14px; cursor: pointer; color: #4B5563; }
+        .page-btn.active { background: #111827; color: white; border-color: #111827; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -128,6 +134,7 @@
         <div class="clubs-grid" id="clubsGrid">
             <!-- Cards go here -->
         </div>
+        <div class="pagination" id="pagination"></div>
     </div>
 
     <!-- CRUD Modal -->
@@ -173,6 +180,8 @@
         let allEvents = [];
         let allManagers = [];
         let currentFilter = 'all';
+        let currentPage = 1;
+        const itemsPerPage = 8;
 
         async function init() {
             const u = getUser();
@@ -180,7 +189,7 @@
                 const initials = u.full_name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
                 document.getElementById('sidebarUser').innerHTML = `
                     <div class="avatar">${initials}</div>
-                    <div class="user-info">${u.full_name}<span>Administrator</span></div>
+                    <div class="user-info">${u.full_name}<span>Quản lý</span></div>
                 `;
             }
             await loadData();
@@ -209,6 +218,7 @@
 
         function setFilter(status, btn) {
             currentFilter = status;
+            currentPage = 1;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             renderClubs();
@@ -220,11 +230,17 @@
             
             if (filtered.length === 0) {
                 grid.innerHTML = '<p style="color:#9CA3AF;">No clubs found.</p>';
+                document.getElementById('pagination').innerHTML = '';
                 return;
             }
 
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            if (currentPage > totalPages) currentPage = totalPages;
+            const start = (currentPage - 1) * itemsPerPage;
+            const paginated = filtered.slice(start, start + itemsPerPage);
+
             let html = '';
-            filtered.forEach(club => {
+            paginated.forEach(club => {
                 const clubEvents = allEvents.filter(e => e.club_id === club.id);
                 const upcomingEvents = clubEvents.filter(e => e.status === 'upcoming');
                 const managers = allManagers.filter(m => m.club_id === club.id);
@@ -258,7 +274,27 @@
                 </div>`;
             });
             grid.innerHTML = html;
+            renderPagination(totalPages);
             if(typeof applyI18n === 'function') applyI18n();
+        }
+
+        function renderPagination(totalPages) {
+            const container = document.getElementById('pagination');
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+            let html = `<button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            html += `<button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
+            container.innerHTML = html;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderClubs();
         }
 
         // CRUD Logic

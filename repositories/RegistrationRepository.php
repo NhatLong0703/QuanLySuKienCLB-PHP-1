@@ -8,15 +8,26 @@ class RegistrationRepository extends BaseRepository {
     }
 
     public function create($eventId, $userId) {
-        $stmt = $this->db->prepare("INSERT INTO registrations (event_id,user_id,status) VALUES (:event_id,:user_id,'registered')");
+        $stmt = $this->db->prepare("INSERT INTO registrations (event_id,user_id,status,registered_at,cancelled_at) VALUES (:event_id,:user_id,'registered',NOW(),NULL) ON DUPLICATE KEY UPDATE status='registered', registered_at=NOW(), cancelled_at=NULL");
         $stmt->execute(['event_id'=>$eventId,'user_id'=>$userId]);
-        return $this->db->lastInsertId();
+        
+        // Fetch the ID in case it was an update
+        $stmt = $this->db->prepare("SELECT id FROM registrations WHERE event_id=:event_id AND user_id=:user_id");
+        $stmt->execute(['event_id'=>$eventId,'user_id'=>$userId]);
+        return $stmt->fetchColumn();
     }
 
     public function cancel($id) {
         $stmt = $this->db->prepare("UPDATE registrations SET status='cancelled',cancelled_at=NOW() WHERE id=:id");
         $stmt->execute(['id'=>$id]);
         return $stmt->rowCount();
+    }
+
+    public function findById($id) {
+        $stmt = $this->db->prepare("SELECT * FROM registrations WHERE id=:id");
+        $stmt->execute(['id'=>$id]);
+        $row = $stmt->fetch();
+        return $row ? new Registration($row) : null;
     }
 
     public function getByEvent($eventId) {

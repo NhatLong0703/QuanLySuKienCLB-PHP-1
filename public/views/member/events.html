@@ -161,8 +161,15 @@
                     const imgUrl = ev.image ? ev.image : 'https://placehold.co/600x300/1E3A5F/white?text=Event+Poster';
 
                     let btnHtml = '';
+                    
+                    const now = new Date();
+                    const deadline = ev.registration_deadline ? new Date(ev.registration_deadline) : null;
+                    const isExpired = deadline && deadline < now;
+
                     if (isReg) {
                         btnHtml = `<button class="btn-register btn-disabled" disabled>Already Registered</button>`;
+                    } else if (isExpired) {
+                        btnHtml = `<button class="btn-register btn-disabled" disabled>Registration Expired</button>`;
                     } else if (ev.slots_left <= 0) {
                         btnHtml = `<button class="btn-register btn-disabled" disabled>Event Full</button>`;
                     } else {
@@ -201,6 +208,7 @@
         }
 
         async function registerEvent(eventId) {
+            if (!confirm('Bạn có chắc chắn muốn đăng ký tham gia sự kiện này không?')) return;
             const u = getUser();
             try {
                 await apiCall('/registration/register', 'POST', { event_id: eventId, user_id: u.id });
