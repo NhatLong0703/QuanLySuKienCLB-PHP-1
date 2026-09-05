@@ -68,9 +68,14 @@
     <div class="main-content">
         <div class="header">
             <div>
-                <h1>Browse Clubs</h1>
-                <p>Discover the active student clubs in the university.</p>
+                <h1>Câu lạc bộ</h1>
+                <p>Khám phá và tham gia các câu lạc bộ sinh viên.</p>
             </div>
+        </div>
+
+        <div class="tabs" style="margin-bottom: 20px; display: flex; gap: 10px; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px;">
+            <button id="tab-all" class="btn btn-primary" onclick="setFilter('all')" style="padding: 6px 16px; border-radius: 20px;">Tất cả CLB</button>
+            <button id="tab-my" class="btn btn-outline" onclick="setFilter('my')" style="padding: 6px 16px; border-radius: 20px; border: none; color: #4B5563;">CLB của tôi</button>
         </div>
 
         <div class="clubs-grid" id="clubList">
@@ -78,7 +83,34 @@
         </div>
     </div>
 
+    <!-- Members Modal -->
+    <div class="modal-overlay" id="membersModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000;">
+        <div class="modal" style="background: white; border-radius: 12px; width: 90vw; max-width: 800px; padding: 2rem; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #E5E7EB; padding-bottom: 15px;">
+                <h2 style="font-size: 24px; margin: 0; color: #111827;">Thành viên Câu lạc bộ</h2>
+                <button class="close-btn" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #6B7280;" onclick="closeMembersModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="overflow-y: auto;">
+                <table style="width:100%; text-align:left; border-collapse:collapse; font-size: 15px;">
+                    <thead>
+                        <tr style="border-bottom:1px solid #E5E7EB;">
+                            <th style="padding:10px; white-space:nowrap;">Thành viên</th>
+                            <th style="padding:10px;">Email</th>
+                            <th style="padding:10px;">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody">
+                        <tr><td colspan="3" style="text-align:center; padding:20px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let allClubs = [];
+        let currentFilter = 'all';
+
         async function init() {
             const u = getUser();
             if(u) {
@@ -90,32 +122,154 @@
             }
 
             try {
-                // Fetch clubs where status is active (usually all active ones)
+                // Fetch clubs where status is active
                 const res = await apiCall(`/club/index?status=active`);
-                const el = document.getElementById('clubList'); 
-                el.innerHTML = '';
-                
-                const clubs = res.data.data || [];
-                if(clubs.length === 0) {
-                    el.innerHTML = '<p style="color:#9CA3AF; font-size:14px; grid-column: 1/-1;">No clubs available.</p>';
-                    return;
-                }
-
-                clubs.forEach(c => {
-                    const imgHtml = c.image 
-                        ? `<img src="${c.image}" class="club-avatar" alt="${c.name}">`
-                        : `<div class="club-avatar">${c.name.charAt(0).toUpperCase()}</div>`;
-
-                    el.innerHTML += `
-                    <div class="club-card">
-                        ${imgHtml}
-                        <div class="club-name">${c.name}</div>
-                        <div class="club-desc">${c.description || 'No description provided.'}</div>
-                        <button class="btn-view-events" onclick="location.href='/views/member/events.html?club_id=${c.id}'">View Events</button>
-                    </div>`;
-                });
+                allClubs = res.data.data || [];
+                renderClubs();
             } catch(e) {
                 document.getElementById('clubList').innerHTML = `<p style="color:red; grid-column: 1/-1;">Error: ${e.message}</p>`;
+            }
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            if (filter === 'all') {
+                document.getElementById('tab-all').className = 'btn btn-primary';
+                document.getElementById('tab-all').style.border = '';
+                document.getElementById('tab-all').style.color = '';
+                
+                document.getElementById('tab-my').className = 'btn btn-outline';
+                document.getElementById('tab-my').style.border = 'none';
+                document.getElementById('tab-my').style.color = '#4B5563';
+            } else {
+                document.getElementById('tab-my').className = 'btn btn-primary';
+                document.getElementById('tab-my').style.border = '';
+                document.getElementById('tab-my').style.color = '';
+                
+                document.getElementById('tab-all').className = 'btn btn-outline';
+                document.getElementById('tab-all').style.border = 'none';
+                document.getElementById('tab-all').style.color = '#4B5563';
+            }
+            renderClubs();
+        }
+
+        function renderClubs() {
+            const el = document.getElementById('clubList'); 
+            el.innerHTML = '';
+            
+            let filteredClubs = allClubs;
+            if (currentFilter === 'my') {
+                filteredClubs = allClubs.filter(c => c.membership_status === 'approved' || c.membership_status === 'pending');
+            }
+
+            if(filteredClubs.length === 0) {
+                el.innerHTML = '<p style="color:#9CA3AF; font-size:14px; grid-column: 1/-1;">Không có câu lạc bộ nào.</p>';
+                return;
+            }
+
+            filteredClubs.forEach(c => {
+                const imgHtml = c.image 
+                    ? `<img src="${c.image}" class="club-avatar" alt="${c.name}">`
+                    : `<div class="club-avatar">${c.name.charAt(0).toUpperCase()}</div>`;
+
+                let memberActionHtml = '';
+                if (!c.membership_status) {
+                    memberActionHtml = `<button class="btn btn-primary" style="background:#4338CA; border-color:#4338CA; color:white; flex: 1; padding: 8px 0; border-radius: 8px; font-weight: 500;" onclick="joinClub(${c.id})">Xin gia nhập</button>`;
+                } else if (c.membership_status === 'pending') {
+                    memberActionHtml = `<button class="btn btn-primary" style="background:#F59E0B; border-color:#F59E0B; color:white; flex: 1; padding: 8px 0; border-radius: 8px; font-weight: 500; cursor:default;" disabled>Đang chờ duyệt</button>`;
+                } else if (c.membership_status === 'approved') {
+                    memberActionHtml = `
+                        <div style="display: flex; gap: 8px; width: 100%;">
+                            <div style="flex: 1; background:#10B981; color:white; border-radius:8px; font-size:14px; font-weight:500; display:flex; align-items:center; justify-content:center; padding: 8px 0;">✓ Thành viên</div>
+                            <button class="btn btn-outline" style="border-color:#EF4444; color:#EF4444; border-radius:8px; padding: 8px 12px; font-weight: 500;" onclick="leaveClub(${c.id})" title="Rời CLB">🚪 Rời</button>
+                        </div>
+                    `;
+                } else if (c.membership_status === 'rejected') {
+                     memberActionHtml = `<button class="btn btn-primary" style="background:#EF4444; border-color:#EF4444; color:white; flex: 1; padding: 8px 0; border-radius: 8px; font-weight: 500; cursor:default;" disabled>Bị từ chối</button>`;
+                }
+
+                el.innerHTML += `
+                <div class="club-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                    <div>
+                        ${imgHtml}
+                        <div style="padding: 15px;">
+                            <div class="club-name" style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">${c.name}</div>
+                            <div class="club-desc" style="color: #6B7280; font-size: 14px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${c.description || 'Chưa có mô tả.'}</div>
+                        </div>
+                    </div>
+                    <div style="padding: 15px; background: #F9FAFB; border-top: 1px solid #F3F4F6;">
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            ${memberActionHtml}
+                            <div style="display:flex; gap:8px; width: 100%;">
+                                <button class="btn btn-outline" style="flex: 1; border-radius: 8px; padding: 8px 0; font-size: 14px; font-weight: 500;" onclick="openMembersModal(${c.id})">👥 Thành viên</button>
+                                <button class="btn btn-outline" style="flex: 1; border-radius: 8px; padding: 8px 0; font-size: 14px; font-weight: 500;" onclick="location.href='/views/member/events.html?club_id=${c.id}'">📅 Sự kiện</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        async function joinClub(clubId) {
+            try {
+                const res = await apiCall('/club/join', 'POST', { club_id: clubId });
+                alert(res.message || "Da gui yeu cau");
+                init(); // reload
+            } catch(e) {
+                alert(e.message);
+            }
+        }
+
+        async function leaveClub(clubId) {
+            if(!confirm("Ban co chac muon roi khoi CLB nay?")) return;
+            try {
+                const res = await apiCall('/club/leave', 'DELETE', { club_id: clubId });
+                alert(res.message || "Da roi CLB");
+                init(); // reload
+            } catch(e) {
+                alert(e.message);
+            }
+        }
+
+        // --- Members Modal Logic ---
+        function openMembersModal(clubId) {
+            document.getElementById('membersModal').style.display = 'flex';
+            loadMembers(clubId);
+        }
+
+        function closeMembersModal() {
+            document.getElementById('membersModal').style.display = 'none';
+        }
+
+        async function loadMembers(clubId) {
+            const tbody = document.getElementById('membersTableBody');
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">Loading...</td></tr>';
+            try {
+                const res = await apiCall(`/club/members?club_id=${clubId}`);
+                const members = res.data || [];
+                // Members can only see approved members
+                const approvedMembers = members.filter(m => m.status === 'approved');
+                
+                if (approvedMembers.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#9CA3AF;">Chưa có thành viên nào.</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                approvedMembers.forEach(m => {
+                    html += `
+                        <tr style="border-bottom:1px solid #E5E7EB;">
+                            <td style="padding:15px 10px; white-space:nowrap;">
+                                <strong style="font-size:16px;">${m.full_name}</strong>
+                            </td>
+                            <td style="padding:15px 10px; color:#6B7280; font-size:14px;">${m.email}</td>
+                            <td style="padding:15px 10px;"><span style="background: #D1FAE5; color: #065F46; padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500;">Thành viên</span></td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="3" style="color:red; text-align:center; padding:20px;">${e.message}</td></tr>`;
             }
         }
 

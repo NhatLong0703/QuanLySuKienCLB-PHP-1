@@ -180,6 +180,30 @@
         </div>
     </div>
 
+    <!-- Members Modal -->
+    <div class="modal-overlay" id="membersModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000;">
+        <div class="modal" style="background: white; border-radius: 12px; width: 90vw; max-width: 800px; padding: 2rem; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #E5E7EB; padding-bottom: 15px;">
+                <h2 style="font-size: 24px; margin: 0; color: #111827;">Thành viên Câu lạc bộ</h2>
+                <button class="close-btn" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #6B7280;" onclick="closeMembersModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="overflow-y: auto;">
+                <table style="width:100%; text-align:left; border-collapse:collapse; font-size: 15px;">
+                    <thead>
+                        <tr style="border-bottom:1px solid #E5E7EB;">
+                            <th style="padding:10px; white-space:nowrap;">Thành viên</th>
+                            <th style="padding:10px;">Email</th>
+                            <th style="padding:10px;">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody">
+                        <tr><td colspan="3" style="text-align:center; padding:20px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script>
         let allClubs = [];
         let allEvents = [];
@@ -285,6 +309,7 @@
                             <span class="stat-val text">${managerName}</span>
                         </div>
                         <div class="card-actions">
+                            <button class="btn btn-outline" style="padding:4px 8px; font-size:12px; margin-right:5px; border-radius:4px;" onclick="openMembersModal(${club.id})">👥 Members</button>
                             <button class="icon-btn icon-edit" onclick="openModal(${club.id})" title="Edit">✏️</button>
                             <button class="icon-btn icon-delete" onclick="deleteClub(${club.id})" title="Delete">🗑️</button>
                         </div>
@@ -380,6 +405,52 @@
                 loadData();
                 e.target.value = ''; // reset
             });
+        }
+
+        // --- Members Modal Logic ---
+        function openMembersModal(clubId) {
+            document.getElementById('membersModal').style.display = 'flex';
+            loadMembers(clubId);
+        }
+
+        function closeMembersModal() {
+            document.getElementById('membersModal').style.display = 'none';
+        }
+
+        async function loadMembers(clubId) {
+            const tbody = document.getElementById('membersTableBody');
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">Loading...</td></tr>';
+            try {
+                const res = await apiCall(`/club/members?club_id=${clubId}`);
+                const members = res.data || [];
+                
+                if (members.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#9CA3AF;">Chưa có thành viên nào.</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                members.forEach(m => {
+                    let badgeClass = 'badge-inactive';
+                    let statusText = m.status;
+                    if (m.status === 'approved') { badgeClass = 'badge-active'; statusText = 'Đã duyệt'; }
+                    else if (m.status === 'pending') { badgeClass = 'badge-pending'; statusText = 'Chờ duyệt'; }
+                    else if (m.status === 'rejected') { badgeClass = 'badge-inactive'; statusText = 'Từ chối'; }
+
+                    html += `
+                        <tr style="border-bottom:1px solid #E5E7EB;">
+                            <td style="padding:15px 10px; white-space:nowrap;">
+                                <strong style="font-size:16px;">${m.full_name}</strong>
+                            </td>
+                            <td style="padding:15px 10px; color:#6B7280; font-size:14px;">${m.email}</td>
+                            <td style="padding:15px 10px;"><span class="badge ${badgeClass}" style="font-size: 11px;">${statusText}</span></td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="3" style="color:red; text-align:center; padding:20px;">${e.message}</td></tr>`;
+            }
         }
 
         init();

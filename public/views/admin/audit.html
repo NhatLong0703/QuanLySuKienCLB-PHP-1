@@ -124,6 +124,11 @@
                 </tbody>
             </table>
         </div>
+
+        <div id="paginationControls" style="padding: 16px 24px; margin-top: 20px; border: 1px solid #F3F4F6; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; background: #fff;">
+            <div id="pageInfo" style="font-size: 13px; color: #6B7280;"></div>
+            <div style="display: flex; gap: 8px;" id="pageButtons"></div>
+        </div>
     </div>
 
     <script>
@@ -131,6 +136,8 @@
         let allLogs = [];
         let currentFilter = 'all';
         let searchQuery = '';
+        let currentPage = 1;
+        const itemsPerPage = 8;
 
         async function init() {
             const u = getUser();
@@ -159,11 +166,13 @@
             currentFilter = status;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            currentPage = 1;
             renderTable();
         }
 
         function handleSearch() {
             searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            currentPage = 1;
             renderTable();
         }
 
@@ -192,11 +201,32 @@
             
             if(filteredData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 40px 0; color: #9CA3AF;">No logs found.</td></tr>';
+                document.getElementById('paginationControls').style.display = 'none';
                 return;
             }
 
+            document.getElementById('paginationControls').style.display = 'flex';
+
+            const totalItems = filteredData.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIdx = (currentPage - 1) * itemsPerPage;
+            const endIdx = startIdx + itemsPerPage;
+            const paginatedData = filteredData.slice(startIdx, endIdx);
+
+            // Render Pagination
+            const showStart = startIdx + 1;
+            const showEnd = Math.min(endIdx, totalItems);
+            document.getElementById('pageInfo').innerText = `Showing ${showStart} to ${showEnd} of ${totalItems} results`;
+            
+            let pageHtml = '';
+            pageHtml += `<button class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">Previous</button>`;
+            pageHtml += `<button class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;" ${currentPage >= totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Next</button>`;
+            document.getElementById('pageButtons').innerHTML = pageHtml;
+
             let html = '';
-            filteredData.forEach(item => {
+            paginatedData.forEach(item => {
                 const initials = item.user_name ? item.user_name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() : 'SYS';
                 const color = item.user_id ? colors[item.user_id % colors.length] : '#4B5563';
                 
@@ -225,6 +255,11 @@
                 </tr>`;
             });
             tbody.innerHTML = html;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderTable();
         }
 
         // Export only
