@@ -163,3 +163,19 @@ QuanLySuKienCLB-PHP/
 │   └── index.php      # Router trung tâm. Định tuyến mọi Request API tới Controller.
 └── README.md          # Tài liệu báo cáo dự án.
 ```
+
+---
+
+## 🧪 Các Kịch Bản Kiểm Thử (Test Cases Đã Vượt Qua)
+
+Quá trình phát triển đã trải qua quá trình kiểm thử kỹ lưỡng. Dưới đây là các Test Case tiêu biểu đã được test thành công:
+
+| ID | Tên chức năng / Kịch bản | Kịch bản kiểm thử (Action) | Kết quả mong đợi (Expected) | Trạng thái |
+|---|---|---|---|:---:|
+| **TC01** | **Bảo mật phân quyền (Access Control)** | Đăng nhập bằng tài khoản `Member` và cố gắng truy cập URL trang Quản trị của Admin (`/views/admin/dashboard.html`). | Hệ thống nhận diện sai Role, chặn truy cập và chuyển hướng hoặc báo lỗi 403 Forbidden. | ✅ Pass |
+| **TC02** | **Logic Phân công Quản lý (Auto-Upgrade Role)** | Admin chỉ định một sinh viên (`Member`) làm Quản lý cho 1 Câu lạc bộ. | Hệ thống lưu dữ liệu quản lý, đồng thời tự động thăng cấp role của sinh viên đó lên thành `Organizer`. | ✅ Pass |
+| **TC03** | **Logic Hủy quyền Quản lý (Auto-Downgrade Role)** | Admin hủy phân công CLB cuối cùng mà một Organizer đang quản lý. | Hệ thống xóa dữ liệu quản lý, kiểm tra thấy người này không còn quản lý CLB nào, tự động hạ role về `Member`. | ✅ Pass |
+| **TC04** | **Tính riêng tư dữ liệu của Organizer** | Đăng nhập tài khoản Organizer A (được giao quản lý CLB IT). | Trên Dashboard và các trang Quản lý chỉ tải ra danh sách thành viên và sự kiện của riêng CLB IT. Không nhìn thấy CLB khác. | ✅ Pass |
+| **TC05** | **Ngăn thao tác trái phép từ Frontend** | Đăng nhập Organizer A, dùng Postman hoặc Console để gửi API lệnh xóa Sự kiện của CLB B. | Backend (EventController) nhận lệnh nhưng kiểm tra quyền sở hữu, từ chối thực hiện vì Organizer A không quản lý CLB B. | ✅ Pass |
+| **TC06** | **Giới hạn số lượng vé sự kiện (Capacity)** | Sự kiện có Capacity = 100. Người thứ 101 bấm đăng ký. | API trả về lỗi "Sự kiện đã hết chỗ", không insert thêm vào database. | ✅ Pass |
+| **TC07** | **Xóa dữ liệu phân tầng (Cascade Delete)** | Admin tiến hành Xóa 1 Câu lạc bộ khỏi hệ thống. | Toàn bộ Sự kiện, Danh sách thành viên, Lịch sử đăng ký vé thuộc về CLB đó đều tự động biến mất khỏi CSDL. | ✅ Pass |
