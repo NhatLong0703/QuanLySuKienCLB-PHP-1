@@ -100,3 +100,66 @@ Hệ thống gồm **10 bảng chính** liên kết với nhau bằng Foreign Ke
 10. `event_feedbacks`: Review, đánh giá số sao của sinh viên sau sự kiện.
 
 *Lưu ý: Mọi liên kết khóa ngoại đều sử dụng cơ chế `ON DELETE CASCADE`. Ví dụ, nếu Xóa 1 Câu lạc bộ, toàn bộ Thành viên, Sự kiện, Vé đăng ký của CLB đó cũng sẽ tự động bị xóa theo để dọn dẹp bộ nhớ.*
+
+---
+
+## 🛠️ Hướng dẫn Cài đặt & Khởi chạy dự án (Setup)
+
+**Bước 1: Clone dự án hoặc tải mã nguồn về máy**
+Giải nén dự án vào thư mục `htdocs` (nếu dùng XAMPP) hoặc thư mục làm việc của bạn.
+
+**Bước 2: Cài đặt Cơ sở dữ liệu (Database)**
+1. Khởi động MySQL (qua XAMPP, Laragon, v.v.).
+2. Tạo một database mới (ví dụ: `clubhub_db`).
+3. Mở phpMyAdmin hoặc DBeaver, import file SQL khởi tạo (nếu có) để tạo bảng và đổ dữ liệu mẫu.
+4. Mở file `database/Database.php` (hoặc cấu hình kết nối DB tương đương) và chỉnh sửa thông tin cho đúng với Localhost của bạn:
+   ```php
+   $host = '127.0.0.1';
+   $db   = 'clubhub_db'; // Tên database của bạn
+   $user = 'root';
+   $pass = '';
+   ```
+
+**Bước 3: Khởi chạy máy chủ PHP (Local Server)**
+Mở Terminal / Command Prompt tại thư mục gốc của dự án và chạy lệnh sau (hoặc cấu hình vhost trên XAMPP trỏ vào thư mục `public`):
+```bash
+php -S localhost:8080 -t public
+```
+
+**Bước 4: Truy cập ứng dụng**
+- Mở trình duyệt và truy cập: `http://localhost:8080`
+- Trình duyệt sẽ tự động điều hướng đến các trang Giao diện.
+
+---
+
+## 🔑 Danh sách Tài khoản Test (Mẫu)
+Để thuận tiện cho Giảng viên chấm bài, dưới đây là các tài khoản mặc định (Nên tạo ra bằng script seed nếu cần):
+
+- **Tài khoản Admin:**
+  - Email: `admin@example.com`
+  - Mật khẩu: `123456`
+- **Tài khoản Organizer:**
+  - Email: `organizer@example.com`
+  - Mật khẩu: `123456`
+- **Tài khoản Member (Sinh viên):**
+  - Email: `member@example.com`
+  - Mật khẩu: `123456`
+
+---
+
+## 📂 Cấu trúc Thư mục (Folder Structure)
+Dự án được xây dựng theo chuẩn MVC tự định nghĩa (Custom MVC), dễ dàng quản lý code:
+
+```text
+QuanLySuKienCLB-PHP/
+├── controllers/       # (Controller) Chứa logic xử lý các HTTP Request, Phân quyền API.
+├── database/          # Cấu hình kết nối MySQL và file SQL Seed (Tạo dữ liệu mẫu).
+├── models/            # (Model) Các Class đối tượng, biểu diễn thực thể.
+├── repositories/      # (Repository) Tách biệt các câu lệnh SQL INSERT, UPDATE, SELECT.
+├── public/            # (Web Root) Document root để chạy Web.
+│   ├── assets/        # Chứa CSS, hình ảnh, JavaScript chung.
+│   ├── uploads/       # Chứa file/ảnh người dùng tải lên.
+│   ├── views/         # (View) Chứa các file HTML tĩnh giao diện cho từng Role (admin, organizer, member).
+│   └── index.php      # Router trung tâm. Định tuyến mọi Request API tới Controller.
+└── README.md          # Tài liệu báo cáo dự án.
+```
