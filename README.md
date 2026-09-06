@@ -1,6 +1,29 @@
-# ClubHub - Hệ thống Quản lý Câu lạc bộ và Sự kiện Sinh viên
+# Hệ thống quản lý sự kiện / câu lạc bộ sinh viên
 
-Đồ án (Bài tập lớn) xây dựng hệ thống quản lý, kết nối sinh viên với các Câu lạc bộ (CLB) trong trường Đại học/Cao đẳng. Hệ thống giúp sinh viên dễ dàng khám phá, tham gia CLB, đăng ký các sự kiện, đồng thời giúp Ban quản lý và Nhà trường kiểm soát, thống kê các hoạt động ngoại khóa một cách chuyên nghiệp.
+## 1. Thành viên nhóm
+| MSV | Họ và tên | Vai trò | Nhiệm vụ |
+| --- | --- | --- | --- |
+| 224001778 | Đặng Quang Doanh (Nhóm trưởng) | Project Manager | Thiết kế database, quản lý dự án, triển khai tính năng, phân tích nghiệp vụ |
+| 224001811 | Nguyễn Nhật Long | Backend | Code backend, test tính năng |
+| 224001829 | Cao Bá Sơn | Frontend | UI, Figma, code frontend |
+| 224001815 | Nguyễn Đức Minh | Backend | Code backend, test API |
+| 224001775 | Dương Thị Chi | Frontend | UI, Figma, code frontend |
+| 223001676 | Nguyễn Phương Thủy | QA / Documentation | Viết báo cáo, Figma, test dự án |
+
+## 2. Mô tả bài toán
+Xây dựng cổng thông tin cho câu lạc bộ hoặc khoa để công bố sự kiện, nhận đăng ký, điểm danh và thống kê người tham gia.
+
+### Người dùng mục tiêu
+- **Khách / Thành viên**: Xem danh sách sự kiện, lọc theo ngày/câu lạc bộ, xem chi tiết, đăng ký hoặc hủy đăng ký sự kiện.
+- **Ban tổ chức (BTC)**: Tạo sự kiện, quản lý đăng ký, đóng mở đăng ký, điểm danh người tham gia và xem danh sách tham gia.
+- **Quản trị viên (Admin)**: Quản lý câu lạc bộ, tài khoản người dùng, toàn bộ sự kiện và thống kê hệ thống.
+
+### Luồng nghiệp vụ chính
+1. **Khách / Thành viên**: Duyệt danh sách sự kiện (lọc theo ngày/câu lạc bộ, trạng thái) -> Xem chi tiết -> Đăng ký tham gia (nếu còn chỗ/trong hạn) -> Hủy đăng ký trước hạn.
+
+---
+
+Đồ án (Bài tập lớn) mở rộng trên nền tảng kết nối sinh viên với các Câu lạc bộ (CLB) trong trường Đại học/Cao đẳng. Hệ thống giúp sinh viên dễ dàng khám phá, tham gia CLB, đăng ký các sự kiện, đồng thời giúp Ban quản lý và Nhà trường kiểm soát, thống kê các hoạt động ngoại khóa một cách chuyên nghiệp.
 
 ---
 
