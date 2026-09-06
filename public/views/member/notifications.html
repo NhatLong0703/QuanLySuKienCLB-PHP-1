@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Notifications - Member</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background-color: #FDFBF7; display: flex; min-height: 100vh; color: #1F2937; }
         
         /* Sidebar Styling */
         .sidebar { width: 250px; background-color: #0F172A; color: #9CA3AF; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
-        .sidebar-brand { font-family: 'Playfair Display', serif; font-size: 24px; color: white; padding: 0 20px 20px; border-bottom: 1px solid #1E293B; margin-bottom: 20px; }
+        .sidebar-brand { font-family: 'Inter', sans-serif; font-size: 24px; color: white; padding: 0 20px 20px; border-bottom: 1px solid #1E293B; margin-bottom: 20px; }
         .sidebar-brand span { display: block; font-family: 'Inter', sans-serif; font-size: 10px; font-weight: normal; letter-spacing: 2px; margin-top: 4px; color: #64748B; text-transform: uppercase; }
         .sidebar-menu-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin: 20px 20px 10px; color: #475569; }
         .sidebar-menu a { display: flex; align-items: center; padding: 12px 20px; color: #9CA3AF; text-decoration: none; font-size: 14px; transition: all 0.2s; }
@@ -24,7 +24,7 @@
         /* Main Content */
         .main-content { flex: 1; padding: 40px; overflow-y: auto; max-width: 900px; margin: 0 auto; }
         .header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .header h1 { font-family: 'Playfair Display', serif; font-size: 32px; color: #111827; margin-bottom: 8px; }
+        .header h1 { font-family: 'Inter', sans-serif; font-size: 32px; color: #111827; margin-bottom: 8px; }
         .header p { color: #6B7280; font-size: 14px; }
 
         .notification-list { display: flex; flex-direction: column; gap: 16px; }
@@ -89,7 +89,7 @@
     <div class="modal-overlay" id="notifDetailModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
         <div class="modal" style="background:white; border-radius:12px; width:450px; max-width:90%; padding:24px; box-shadow:0 10px 25px rgba(0,0,0,0.1);">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
-                <h2 id="modalNotifTitle" style="font-family:'Playfair Display', serif; font-size:22px; color:#111827;">Title</h2>
+                <h2 id="modalNotifTitle" style="font-family: 'Inter', sans-serif; font-size:22px; color:#111827;">Title</h2>
                 <button onclick="document.getElementById('notifDetailModal').style.display='none'" style="background:none; border:none; font-size:20px; color:#6B7280; cursor:pointer;">&times;</button>
             </div>
             <p id="modalNotifTime" style="font-size:12px; color:#6B7280; margin-bottom:16px;"></p>

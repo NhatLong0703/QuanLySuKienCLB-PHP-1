@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - ClubHub Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -11,7 +11,7 @@
         
         /* Sidebar Styling */
         .sidebar { width: 250px; background-color: #0F172A; color: #9CA3AF; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
-        .sidebar-brand { font-family: 'Playfair Display', serif; font-size: 24px; color: white; padding: 0 20px 20px; border-bottom: 1px solid #1E293B; margin-bottom: 20px; }
+        .sidebar-brand { font-family: 'Inter', sans-serif; font-size: 24px; color: white; padding: 0 20px 20px; border-bottom: 1px solid #1E293B; margin-bottom: 20px; }
         .sidebar-brand span { display: block; font-family: 'Inter', sans-serif; font-size: 10px; font-weight: normal; letter-spacing: 2px; margin-top: 4px; color: #64748B; text-transform: uppercase; }
         .sidebar-menu-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin: 20px 20px 10px; color: #475569; }
         .sidebar-menu a { display: flex; align-items: center; padding: 12px 20px; color: #9CA3AF; text-decoration: none; font-size: 14px; transition: all 0.2s; }
@@ -25,7 +25,7 @@
         /* Main Content */
         .main-content { flex: 1; padding: 40px; overflow-y: auto; }
         .header { margin-bottom: 40px; }
-        .header h1 { font-family: 'Playfair Display', serif; font-size: 32px; color: #111827; margin-bottom: 8px; }
+        .header h1 { font-family: 'Inter', sans-serif; font-size: 32px; color: #111827; margin-bottom: 8px; }
         .header p { color: #6B7280; font-size: 14px; }
 
         /* Stats Grid */
@@ -33,7 +33,7 @@
         .stat-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #F3F4F6; }
         .stat-card.dark { background: #0F172A; color: white; border: none; }
         .stat-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #9CA3AF; margin-bottom: 12px; display: block; }
-        .stat-value { font-family: 'Playfair Display', serif; font-size: 36px; margin-bottom: 8px; }
+        .stat-value { font-family: 'Inter', sans-serif; font-size: 36px; margin-bottom: 8px; }
         .stat-desc { font-size: 13px; color: #9CA3AF; }
 
         /* Main Dashboard Grid */
@@ -57,7 +57,7 @@
         .featured-card::after { content: ""; position: absolute; right: 50px; bottom: -100px; width: 200px; height: 200px; background: rgba(255,255,255,0.02); border-radius: 50%; }
         
         .feat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8; margin-bottom: 16px; position: relative; z-index: 2; }
-        .feat-title { font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px; position: relative; z-index: 2; }
+        .feat-title { font-family: 'Inter', sans-serif; font-size: 28px; margin-bottom: 8px; position: relative; z-index: 2; }
         .feat-meta { font-size: 13px; color: #CBD5E1; margin-bottom: 6px; position: relative; z-index: 2; }
         
         .feat-progress-container { margin-top: auto; margin-bottom: 24px; display: flex; align-items: center; gap: 15px; position: relative; z-index: 2; }
