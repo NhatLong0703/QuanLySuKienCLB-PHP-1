@@ -3,70 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <title>Organizer Dashboard - ClubHub</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400..1000;1,400..1000&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', sans-serif; background-color: #f0ebe0; display: flex; min-height: 100vh; color: #1a1a1a; }
+        body { font-family: 'Inter', sans-serif; background-color: #FDFBF7; display: flex; min-height: 100vh; color: #1F2937; }
         
         /* Sidebar Styling */
-        .sidebar { width: 228px; background-color: #0d0f1a; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; flex-shrink: 0; }
-        .sidebar-brand-box { padding: 28px 24px 22px; }
-        .sidebar-brand { font-family: 'DM Serif Display', serif; font-size: 22px; color: #fff; line-height: 1.1; }
-        .sidebar-brand span { display: block; font-size: 10px; letter-spacing: 0.12em; color: #6b7280; margin-top: 3px; text-transform: uppercase; font-family: 'DM Sans', sans-serif; }
-        .sidebar-nav { flex: 1; padding: 0 12px; overflow-y: auto; }
-        .sidebar-menu-title { font-size: 10px; letter-spacing: 0.12em; color: #4b5563; padding: 0 12px; margin-bottom: 10px; text-transform: uppercase; }
-        .sidebar-menu a { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 14px; border-radius: 8px; text-decoration: none; margin-bottom: 2px; color: #9ca3af; font-size: 14px; transition: all 0.15s; }
-        .sidebar-menu a:hover { background-color: rgba(255,255,255,0.05); }
-        .sidebar-menu a.active { background-color: #e07a2a; color: #fff; font-weight: 600; }
+        .sidebar { width: 250px; background-color: #0F172A; color: #9CA3AF; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
+        .sidebar-brand-box { font-size: 24px; color: white; padding: 0 20px 20px; border-bottom: 1px solid #1E293B; margin-bottom: 20px; }
+        .sidebar-brand { font-family: 'Inter', sans-serif; font-size: 24px; color: white; }
+        .sidebar-brand span { display: block; font-size: 10px; font-weight: normal; letter-spacing: 2px; margin-top: 4px; color: #64748B; text-transform: uppercase; }
+        .sidebar-nav { flex: 1; overflow-y: auto; }
+        .sidebar-menu-title { font-size: 11px; letter-spacing: 1px; color: #475569; padding: 0; margin: 20px 20px 10px; text-transform: uppercase; }
+        .sidebar-menu a { display: flex; align-items: center; gap: 8px; width: auto; padding: 12px 20px; border-radius: 0; text-decoration: none; margin-bottom: 0; color: #9CA3AF; font-size: 14px; transition: all 0.2s; }
+        .sidebar-menu a:hover { color: white; }
+        .sidebar-menu a.active { background-color: #F59E0B; color: white; font-weight: 500; border-radius: 4px; margin: 0 10px; padding: 12px 10px; width: calc(100% - 20px); }
         .sidebar-menu a.active .dot { margin-left: auto; width: 6px; height: 6px; border-radius: 50%; background-color: #fff; opacity: 0.7; }
         .sidebar-menu a .icon { font-size: 12px; opacity: 0.7; }
-        .sidebar-user { padding: 16px 24px; border-top: 1px solid #1e2030; display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 34px; height: 34px; border-radius: 50%; background: #b45309; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
-        .user-info { font-size: 13px; font-weight: 600; color: #fff; }
-        .user-info span { display: block; font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; font-weight: normal; }
+        .sidebar-user { margin-top: auto; padding: 20px; border-top: 1px solid #1E293B; display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #10B981; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .user-info { font-size: 14px; font-weight: 400; color: #fff; }
+        .user-info span { display: block; font-size: 11px; color: #64748B; text-transform: uppercase; margin-top: 2px; font-weight: normal; }
 
         /* Main Content */
-        .main-content { flex: 1; padding: 36px 40px; overflow-y: auto; }
-        .header { margin-bottom: 28px; }
-        .header h1 { font-family: 'DM Serif Display', serif; font-size: 38px; color: #1a1a1a; letter-spacing: -0.01em; margin: 0; line-height: 1.2; }
-        .header p { color: #7a7060; font-size: 14px; margin-top: 6px; }
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .header { margin-bottom: 30px; }
+        .header h1 { font-family: 'Inter', sans-serif; font-size: 32px; color: #111827; margin-bottom: 8px; font-weight: 600; }
+        .header p { color: #6B7280; font-size: 14px; margin-top: 0; }
 
         /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 14px; margin-bottom: 28px; }
-        .stat-card { border-radius: 14px; padding: 28px 24px; background: #fff; border: 1px solid #e5e0d5; }
-        .stat-card.dark { background: #0d0f1a; color: #fff; border: none; padding-bottom: 24px; }
+        .stats-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+        .stat-card { border-radius: 12px; padding: 28px 24px; background: #fff; border: 1px solid #E5E7EB; }
+        .stat-card.dark { background: #0F172A; color: #fff; border: none; padding-bottom: 24px; }
         .stat-title { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px; display: block; }
-        .stat-card.dark .stat-title { color: #6b7280; }
-        .stat-card:not(.dark) .stat-title { color: #7a7060; }
-        .stat-value { font-family: 'DM Serif Display', serif; font-size: 56px; line-height: 1; }
-        .stat-card:not(.dark) .stat-value { color: #1a1a1a; }
-        .stat-desc { font-size: 12px; color: #7a7060; margin-top: 8px; }
+        .stat-card.dark .stat-title { color: #64748B; }
+        .stat-card:not(.dark) .stat-title { color: #6B7280; }
+        .stat-value { font-family: 'Inter', sans-serif; font-size: 48px; line-height: 1; font-weight: 500; }
+        .stat-card:not(.dark) .stat-value { color: #111827; }
+        .stat-desc { font-size: 12px; color: #6B7280; margin-top: 8px; }
 
         /* Charts Rows */
         .chart-row-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
         .chart-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
-        .chart-card { background: #fff; border-radius: 14px; border: 1px solid #e5e0d5; padding: 22px 24px; }
+        .chart-card { background: #fff; border-radius: 12px; border: 1px solid #E5E7EB; padding: 22px 24px; }
         .chart-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
-        .chart-subtitle { font-size: 12px; color: #7a7060; margin-bottom: 18px; }
+        .chart-subtitle { font-size: 12px; color: #6B7280; margin-bottom: 18px; }
         .chart-container { position: relative; height: 200px; width: 100%; }
 
         /* Table Section */
-        .table-section { background: #fff; border-radius: 14px; border: 1px solid #e5e0d5; overflow: hidden; }
-        .table-header { padding: 18px 24px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e0d5; }
+        .table-section { background: #fff; border-radius: 12px; border: 1px solid #E5E7EB; overflow: hidden; }
+        .table-header { padding: 18px 24px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E5E7EB; }
         .table-title { font-weight: 600; font-size: 15px; }
-        .btn-create { padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; background: #e07a2a; color: #fff; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 13px; }
-        .btn-create:hover { background: #c06018; }
+        .btn-create { padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; background: #F59E0B; color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; }
+        .btn-create:hover { background: #D97706; }
         
-        .list-row { display: grid; grid-template-columns: 80px 1fr 120px 140px 100px; padding: 12px 24px; border-bottom: 1px solid #f0ebe0; align-items: center; gap: 10px; }
+        .list-row { display: grid; grid-template-columns: 80px 1fr 120px 140px 100px; padding: 12px 24px; border-bottom: 1px solid #F3F4F6; align-items: center; gap: 10px; }
         .list-row:last-child { border-bottom: none; }
-        .list-header-row { padding: 12px 24px; border-bottom: 1px solid #e5e0d5; font-size: 11px; letter-spacing: 0.1em; color: #7a7060; text-transform: uppercase; display: grid; grid-template-columns: 80px 1fr 120px 140px 100px; gap: 10px; }
+        .list-header-row { padding: 12px 24px; border-bottom: 1px solid #E5E7EB; font-size: 11px; letter-spacing: 0.1em; color: #9CA3AF; text-transform: uppercase; display: grid; grid-template-columns: 80px 1fr 120px 140px 100px; gap: 10px; }
         
         .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; text-transform: capitalize; }
         .badge.active { background: #dcfce7; color: #15803d; }
         .badge.draft { background: #fef9c3; color: #a16207; }
         .badge.closed { background: #fee2e2; color: #b91c1c; }
         
-        .img-placeholder { width: 80px; height: 50px; background: #e5e0d5; border-radius: 6px; display: inline-block; }
+        .img-placeholder { width: 80px; height: 50px; background: #E5E7EB; border-radius: 6px; display: inline-block; }
     </style>
 </head>
 <body>
@@ -85,6 +85,9 @@
             <a href="/views/organizer/events.html"><span class="icon">◎</span> Events</a>
             <a href="/views/organizer/registrations.html"><span class="icon">▣</span> Registrations</a>
             <a href="/views/organizer/attendance.html"><span class="icon">✓</span> Attendance</a>
+            
+            <div class="sidebar-menu-title" style="margin-top: 20px;">System</div>
+            <a href="/views/organizer/settings.html"><span class="icon">⚙</span> Settings</a>
         </nav>
         <div class="sidebar-user" id="sidebarUser"></div>
     </aside>
@@ -126,16 +129,16 @@
                 <div>Price</div>
             </div>
             <div id="listingsTableBody">
-                <p style="padding: 20px; text-align: center; color: #7a7060;">Loading...</p>
+                <p style="padding: 20px; text-align: center; color: #6B7280;">Loading...</p>
             </div>
-            <div id="paginationControls" style="padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e5e0d5;">
+            <div id="paginationControls" style="padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E5E7EB;">
             </div>
         </div>
     </main>
 
     <script>
         // Colors from Figma mockup
-        const C = { orange: '#e07a2a', violet: '#6d28d9', blue: '#0369a1', green: '#15803d', bg: '#f0ebe0', text: '#7a7060' };
+        const C = { orange: '#F59E0B', violet: '#F59E0B', blue: '#2563EB', green: '#10B981', bg: '#F3F4F6', text: '#6B7280' };
 
         let allClubs = [];
         let allEvents = [];
@@ -203,7 +206,7 @@
             const tbody = document.getElementById('listingsTableBody');
             const pagination = document.getElementById('paginationControls');
             
-            tbody.innerHTML = '<p style="padding: 20px; text-align: center; color: #7a7060;">Loading...</p>';
+            tbody.innerHTML = '<p style="padding: 20px; text-align: center; color: #6B7280;">Loading...</p>';
 
             try {
                 const res = await apiCall(`/dashboard/listings?page=${page}&limit=${itemsPerPage}`);
@@ -225,7 +228,7 @@
             const currentListings = pageData.data;
 
             if(currentListings.length === 0) {
-                tbody.innerHTML = '<p style="padding: 20px; text-align: center; color: #7a7060;">No listings available.</p>';
+                tbody.innerHTML = '<p style="padding: 20px; text-align: center; color: #6B7280;">No listings available.</p>';
                 pagination.innerHTML = '';
                 return;
             }
@@ -241,12 +244,12 @@
                     <div>${imgHtml}</div>
                     <div>
                         <div style="font-weight:600; font-size:14px; color:#1a1a1a;">${l.title}</div>
-                        <div style="font-size:12px; color:#7a7060; margin-top:2px;">${l.cat}</div>
+                        <div style="font-size:12px; color:#6B7280; margin-top:2px;">${l.cat}</div>
                     </div>
                     <div><span class="badge ${badgeClass}">${l.status}</span></div>
                     <div>
-                        <div style="font-size:12px; color:#7a7060; margin-bottom:4px; display:flex; justify-content:space-between;"><span>${l.booked}/${l.total} spots</span><span>${pct}%</span></div>
-                        <div style="width:100%; height:4px; background:#f0ebe0; border-radius:2px;"><div style="width:${pct}%; height:100%; background:${pct>=100?C.green:C.violet}; border-radius:2px;"></div></div>
+                        <div style="font-size:12px; color:#6B7280; margin-bottom:4px; display:flex; justify-content:space-between;"><span>${l.booked}/${l.total} spots</span><span>${pct}%</span></div>
+                        <div style="width:100%; height:4px; background:#E5E7EB; border-radius:2px;"><div style="width:${pct}%; height:100%; background:${pct>=100?C.green:C.violet}; border-radius:2px;"></div></div>
                     </div>
                     <div style="font-size:14px; color:#1a1a1a;">${l.price > 0 ? '$'+l.price : 'Free'}</div>
                 </div>`;
@@ -258,12 +261,12 @@
 
             // Render pagination controls
             pagination.innerHTML = `
-                <div style="font-size: 13px; color: #7a7060;">
+                <div style="font-size: 13px; color: #6B7280;">
                     Showing ${startIndex + 1} to ${Math.min(startIndex + pageData.limit, pageData.total)} of ${pageData.total}
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <button onclick="changePage(-1)" ${pageData.page === 1 ? 'disabled' : ''} style="padding: 6px 12px; border: 1px solid #e5e0d5; background: ${pageData.page === 1 ? '#f9f8f6' : '#fff'}; color: ${pageData.page === 1 ? '#b0a89a' : '#1a1a1a'}; border-radius: 6px; cursor: ${pageData.page === 1 ? 'not-allowed' : 'pointer'};">Previous</button>
-                    <button onclick="changePage(1)" ${pageData.page === totalPages ? 'disabled' : ''} style="padding: 6px 12px; border: 1px solid #e5e0d5; background: ${pageData.page === totalPages ? '#f9f8f6' : '#fff'}; color: ${pageData.page === totalPages ? '#b0a89a' : '#1a1a1a'}; border-radius: 6px; cursor: ${pageData.page === totalPages ? 'not-allowed' : 'pointer'};">Next</button>
+                    <button onclick="changePage(-1)" ${pageData.page === 1 ? 'disabled' : ''} style="padding: 6px 12px; border: 1px solid #E5E7EB; background: ${pageData.page === 1 ? '#F9FAFB' : '#fff'}; color: ${pageData.page === 1 ? '#9CA3AF' : '#111827'}; border-radius: 6px; cursor: ${pageData.page === 1 ? 'not-allowed' : 'pointer'};">Previous</button>
+                    <button onclick="changePage(1)" ${pageData.page === totalPages ? 'disabled' : ''} style="padding: 6px 12px; border: 1px solid #E5E7EB; background: ${pageData.page === totalPages ? '#F9FAFB' : '#fff'}; color: ${pageData.page === totalPages ? '#9CA3AF' : '#111827'}; border-radius: 6px; cursor: ${pageData.page === totalPages ? 'not-allowed' : 'pointer'};">Next</button>
                 </div>
             `;
         }
