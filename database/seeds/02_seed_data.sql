@@ -14,7 +14,7 @@ VALUES (
         1,
         "Admin He Thong",
         "admin@example.com",
-        "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+        "$2y$12$1rwVzE6Lk4Z9liHo2wibo.FNC2Q6wu370pLx.F4C.IXbF9AlSvdv6",
         "0900000001",
         "admin",
         "active"
@@ -23,7 +23,7 @@ VALUES (
         2,
         "Truong Ban To Chuc",
         "org1@example.com",
-        "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+        "$2y$12$1rwVzE6Lk4Z9liHo2wibo.FNC2Q6wu370pLx.F4C.IXbF9AlSvdv6",
         "0900000002",
         "organizer",
         "active"
@@ -32,7 +32,7 @@ VALUES (
         3,
         "Nguyen Thi Member",
         "user1@example.com",
-        "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+        "$2y$12$1rwVzE6Lk4Z9liHo2wibo.FNC2Q6wu370pLx.F4C.IXbF9AlSvdv6",
         "0900000003",
         "member",
         "active"
@@ -41,7 +41,7 @@ VALUES (
         4,
         "Tran Van Thanh",
         "user2@example.com",
-        "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+        "$2y$12$1rwVzE6Lk4Z9liHo2wibo.FNC2Q6wu370pLx.F4C.IXbF9AlSvdv6",
         "0900000004",
         "member",
         "active"
@@ -50,7 +50,7 @@ VALUES (
         5,
         "Le Thi Hoa",
         "user3@example.com",
-        "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+        "$2y$12$1rwVzE6Lk4Z9liHo2wibo.FNC2Q6wu370pLx.F4C.IXbF9AlSvdv6",
         "0900000005",
         "member",
         "active"
