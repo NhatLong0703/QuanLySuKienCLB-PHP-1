@@ -1,84 +1,79 @@
-# Hệ thống quản lý sự kiện / câu lạc bộ sinh viên
+# ClubHub - Hệ thống Quản lý Câu lạc bộ và Sự kiện Sinh viên
 
-## 1. Thành viên nhóm
-| MSV | Họ và tên | Vai trò | Nhiệm vụ |
-| --- | --- | --- | --- |
-| 224001778 | Đặng Quang Doanh (Nhóm trưởng) | Project Manager | Thiết kế database, quản lý dự án, triển khai tính năng, phân tích nghiệp vụ |
-| 224001811 | Nguyễn Nhật Long | Backend | Code backend, test tính năng |
-| 224001829 | Cao Bá Sơn | Frontend | UI, Figma, code frontend |
-| 224001815 | Nguyễn Đức Minh | Backend | Code backend, test API |
-| 224001775 | Dương Thị Chi | Frontend | UI, Figma, code frontend |
-| 223001676 | Nguyễn Phương Thùy | QA / Documentation | Viết báo cáo, Figma, test dự án |
+Đồ án (Bài tập lớn) xây dựng hệ thống quản lý, kết nối sinh viên với các Câu lạc bộ (CLB) trong trường Đại học/Cao đẳng. Hệ thống giúp sinh viên dễ dàng khám phá, tham gia CLB, đăng ký các sự kiện, đồng thời giúp Ban quản lý và Nhà trường kiểm soát, thống kê các hoạt động ngoại khóa một cách chuyên nghiệp.
 
-## 2. Mô tả bài toán
-Xây dựng cổng thông tin cho câu lạc bộ hoặc khoa để công bố sự kiện, nhận đăng ký, điểm danh và thống kê người tham gia.
+---
 
-### Người dùng mục tiêu
-- **Khách / Thành viên**: Xem danh sách sự kiện, lọc theo ngày/câu lạc bộ, xem chi tiết, đăng ký hoặc hủy đăng ký sự kiện.
-- **Ban tổ chức (BTC)**: Tạo sự kiện, quản lý đăng ký, đóng mở đăng ký, điểm danh người tham gia và xem danh sách tham gia.
-- **Quản trị viên (Admin)**: Quản lý câu lạc bộ, tài khoản người dùng, toàn bộ sự kiện và thống kê hệ thống.
+## 💻 Công nghệ & Kiến trúc
+- **Backend:** PHP thuần (Native PHP) sử dụng PDO để thao tác với cơ sở dữ liệu.
+- **Frontend:** HTML5, CSS3 thuần, JavaScript (Sử dụng Fetch API để gọi AJAX) theo phong cách thiết kế hiện đại, responsive. Sử dụng font chữ **Inter** đồng nhất trên toàn hệ thống.
+- **Database:** MySQL (Sử dụng Engine InnoDB với các ràng buộc khóa ngoại Foreign Keys).
+- **Architecture:** Thiết kế theo mô hình **MVC** (Model-View-Controller) đơn giản kết hợp với **Repository Pattern** để tách biệt logic truy vấn CSDL. Có Router xử lý URL.
 
-### Luồng nghiệp vụ chính
-1. **Khách / Thành viên**: Duyệt danh sách sự kiện → Lọc theo thời gian, câu lạc bộ, trạng thái → Xem chi tiết → Đăng ký tham gia (kiểm tra hạn, số chỗ, trùng lặp) → Hủy đăng ký trước hạn.
-2. **Ban tổ chức**: Tạo/Sửa sự kiện thuộc câu lạc bộ quản lý → Đóng/Mở đăng ký → Quản lý người tham gia → Điểm danh qua Fetch API hoặc mã QR → Xem thống kê tham gia.
-3. **Quản trị viên**: Quản lý câu lạc bộ và tài khoản → Theo dõi thống kê tổng quan toàn hệ thống.
+---
 
-### Thống nhất các đối tượng dữ liệu và chức năng chính của hệ thống.
+## 👥 Các Role (Phân quyền) và Chức năng
 
-#### 1. Các đối tượng dữ liệu chính
-Hệ thống xoay quanh 8 bảng dữ liệu cốt lõi:
-- **Users**: Lưu trữ thông tin người dùng (Thành viên, Ban tổ chức, Admin) bao gồm mật khẩu mã hóa an toàn (Bcrypt).
-- **Clubs**: Thông tin các Câu lạc bộ tham gia tổ chức sự kiện.
-- **Events**: Thông tin chi tiết về các sự kiện (thời gian, địa điểm, sức chứa...).
-- **Registrations**: Lưu trữ các lượt đăng ký tham gia sự kiện của thành viên.
-- **Club_Managers**: Lưu trữ quyền quản lý CLB (liên kết User và Club).
-- **Attendance**: Lưu trữ lịch sử điểm danh (check-in) thực tế của người tham gia.
-- **Notifications**: Lưu trữ thông báo gửi tới người dùng liên quan đến sự kiện.
-- **Audit_Logs**: Nhật ký hệ thống ghi lại mọi thao tác quan trọng để Admin dễ dàng truy vết.
+Hệ thống bao gồm 3 phân quyền (Role) với các tính năng chuyên biệt và luồng bảo mật nghiêm ngặt.
 
-#### 2. Các chức năng đã làm (Phân quyền theo người dùng)
-- **Dành cho Thành viên (Member)**:
-  - Đăng ký tài khoản, đăng nhập an toàn.
-  - Xem danh sách sự kiện, lọc và tìm kiếm sự kiện.
-  - Xem chi tiết sự kiện và thực hiện Đăng ký / Hủy đăng ký.
-  - Xem thông báo (Notifications) về các sự kiện quan tâm.
-- **Dành cho Ban tổ chức (Organizer)**:
-  - Tất cả quyền của Member.
-  - **Quản lý sự kiện (CRUD)**: Tạo mới, chỉnh sửa, xóa và quản lý sự kiện do CLB của mình tổ chức.
-  - **Quản lý Đăng ký & Điểm danh**: Xem danh sách đăng ký, cập nhật trạng thái (registered/cancelled), và điểm danh trực tiếp người tham gia.
-  - **Thông báo**: Đăng và quản lý thông báo liên quan đến sự kiện/CLB.
-- **Dành cho Quản trị viên (Admin)**:
-  - Toàn quyền quản trị toàn bộ hệ thống với giao diện bảng điều khiển (Dashboard) trực quan.
-  - **Quản lý Dữ liệu Toàn diện (CRUD)**: Thực hiện Thêm/Sửa/Xóa đối với **Tất cả các module** bao gồm: Câu lạc bộ (Clubs), Sự kiện (Events), Người dùng (Users), Đăng ký (Registrations), Điểm danh (Attendance) và Thông báo (Notifications).
+### 1. Admin (Quản trị viên toàn hệ thống)
+*Role cao nhất, có khả năng quản lý dữ liệu toàn trường và theo dõi mọi hoạt động.*
+- **Dashboard:** Thống kê tổng quan số lượng CLB, Sự kiện, Vé đăng ký, và Doanh thu giả lập toàn trường.
+- **Quản lý Câu lạc bộ:** Xem toàn bộ CLB, Thêm mới, Sửa, Xóa.
+- **Phân công Nhân sự (Nổi bật):** Cấp quyền hoặc tước quyền Quản lý CLB cho sinh viên. (Hệ thống có logic **Tự động thăng cấp / Giáng cấp** từ Member ↔ Organizer dựa trên quyền quản lý).
+- **Quản lý Sự kiện:** Xem và quản lý toàn bộ các sự kiện do tất cả các CLB tạo ra.
+- **Nhật ký hệ thống (Audit Logs):** Theo dõi lịch sử thao tác (Ai đã tạo/sửa/xóa cái gì, vào lúc nào) được phân trang rõ ràng.
 
-#### 3. Các chức năng hệ thống (System Features)
-  - **Nhập/Xuất Dữ liệu Tổng (IO)**: Có thể xuất danh sách ra **Excel (CSV)**, in **PDF** hoặc **Import** dữ liệu đầu vào qua file CSV cho mọi phân hệ. Tính năng được tối ưu CSS để khi in PDF sẽ tự động làm gọn giao diện (ẩn menu, tab).
-  - **Cài đặt Giao diện (Theme & UI)**: Đổi chủ đề Sáng/Tối (Dark/Light mode), thay đổi màu chủ đạo (Accent Color) và chỉnh độ sáng màn hình (Brightness) - Áp dụng tự động thông qua `localStorage`.
-  - **Đa ngôn ngữ (i18n)**: Hỗ trợ chuyển đổi nhanh chóng giữa Tiếng Việt, Tiếng Anh và Tiếng Trung Quốc mà không cần reload cứng trang.
-  - **Nhật ký Hệ thống (Audit Logs)**: Ghi lại mọi thao tác quan trọng dưới dạng read-only, đảm bảo bảo mật và cung cấp khả năng truy vết cho Admin. Có thể lọc và xuất file báo cáo log.
+### 2. Organizer (Ban quản lý Câu lạc bộ)
+*Dành cho Ban chủ nhiệm/Core team của CLB. Dữ liệu trên Dashboard của role này được **cá nhân hóa hoàn toàn**, chỉ hiển thị các CLB và Sự kiện thuộc quyền quản lý.*
+- **Quản lý CLB của mình:** Xem thông tin, chỉnh sửa giới thiệu, upload ảnh đại diện CLB.
+- **Quản lý Thành viên:** Xem danh sách người xin gia nhập, tiến hành phê duyệt (Approve) hoặc Từ chối (Reject), hoặc Xóa thành viên cũ.
+- **Tổ chức Sự kiện:** Tạo mới sự kiện (có giới hạn số lượng vé/capacity, thời gian), chỉnh sửa, hủy sự kiện.
+- **Quản lý Đăng ký & Điểm danh:** Kiểm soát danh sách sinh viên đã mua vé/đăng ký, tiến hành Điểm danh (Attendance) tại cửa.
 
-## 3. Công nghệ sử dụng
-- PHP 8.x (kiến trúc MVC thuần)
-- MySQL
-- PDO (Prepared Statements)
-- JavaScript / Fetch API
-- HTML5 / CSS3 (responsive)
+### 3. Member (Sinh viên thông thường)
+*Dành cho toàn bộ sinh viên trong trường.*
+- **Khám phá CLB:** Xem danh sách tất cả CLB trong trường, bấm **Xin gia nhập** hoặc **Rời CLB**.
+- **Xem thông tin minh bạch:** Có thể xem được ai đang làm **👑 Quản lý** và ai là **Thành viên** của một CLB.
+- **Tham gia Sự kiện:** Xem lịch sự kiện, Đăng ký tham gia (Lấy vé). Hệ thống không cho đăng ký nếu đã quá hạn hoặc hết sức chứa (Capacity).
+- **Cổng thông tin cá nhân:** Xem thông báo hệ thống, lịch sử các sự kiện đã tham gia, và để lại Đánh giá (Feedback/Rate sao) cho sự kiện.
 
-## 4. Cài đặt
-1. Clone repository:
-   ```bash
-   git clone https://github.com/NhatLong0703/QuanLySuKienCLB-PHP.git
-   cd QuanLySuKienCLB-PHP
-   ```
-2. Cấu hình kết nối cơ sở dữ liệu trong `config/config.php`.
-3. Tạo database và import dữ liệu từ file SQL nếu có.
-4. Khởi động server PHP hoặc cấu hình cho máy chủ web của bạn:
-   ```bash
-   php -S localhost:8000 -t public
-   ```
-5. Truy cập: `http://localhost:8000`
+---
 
-## 5. Ghi chú
-- Chú ý chỉnh sửa `config/config.php` với thông tin database đúng.
-- Nếu có file dữ liệu mẫu, import vào MySQL trước khi chạy ứng dụng.
+## 🔄 Luồng Dữ liệu (Data Flows) Nổi Bật
 
+1. **Luồng Gia nhập & Rời Câu lạc bộ:**
+   - Member gửi yêu cầu ➔ Bảng `club_members` sinh ra một dòng với trạng thái `pending`.
+   - Organizer nhận được thông báo ➔ Bấm Duyệt ➔ Cập nhật trạng thái thành `approved`.
+   - Member trở thành thành viên chính thức, có quyền xem các sự kiện nội bộ (nếu có mở rộng). Member có quyền bấm Rời CLB (Xóa bản ghi).
+
+2. **Luồng Vòng đời Sự kiện (Event Lifecycle):**
+   - Organizer tạo Sự kiện mới (Bảng `events`).
+   - Member lướt xem và Đăng ký (Ghi vào bảng `registrations`).
+   - Khi Sự kiện diễn ra, Organizer cầm thiết bị check-in ➔ Ghi dữ liệu vào bảng `attendance`.
+   - Sau sự kiện, Member để lại bình luận và đánh giá (Bảng `event_feedbacks`).
+
+3. **Luồng Tự động Phân quyền (Auto Role Management):**
+   - Admin vào trang Clubs, chọn 1 Member và bấm **"Phân công Quản lý"**.
+   - Bảng `club_managers` được insert dữ liệu.
+   - Code Backend tự động nhận diện tài khoản này đang là `member` và tiến hành `UPDATE users SET role = 'organizer'`. Tài khoản này ngay lập tức có quyền truy cập trang quản lý.
+   - Khi Admin bấm **"Hủy phân công"**, hệ thống kiểm tra nếu tài khoản này không còn quản lý CLB nào khác, sẽ tự động trả role về `member`.
+
+---
+
+## 🗄️ Cấu trúc Cơ sở dữ liệu (Database Schema)
+
+Hệ thống gồm **10 bảng chính** liên kết với nhau bằng Foreign Key:
+
+1. `users`: Tài khoản sinh viên/admin (Họ tên, Email, Mật khẩu, Role).
+2. `clubs`: Thông tin Câu lạc bộ (Tên, Ảnh, Mô tả).
+3. `club_managers`: Bảng trung gian gán User làm Quản lý cho Club.
+4. `club_members`: Bảng trung gian gán User làm Thành viên của Club (kèm trạng thái duyệt).
+5. `events`: Thông tin sự kiện (Tên, Thời gian, Sức chứa, Địa điểm).
+6. `registrations`: Vé đăng ký sự kiện của User.
+7. `attendance`: Bảng lưu trữ lịch sử check-in sự kiện của User.
+8. `notifications`: Hệ thống thông báo gửi tới User.
+9. `audit_logs`: Bảng lưu vết (Log) các hành động quan trọng do Admin/Organizer thực hiện.
+10. `event_feedbacks`: Review, đánh giá số sao của sinh viên sau sự kiện.
+
+*Lưu ý: Mọi liên kết khóa ngoại đều sử dụng cơ chế `ON DELETE CASCADE`. Ví dụ, nếu Xóa 1 Câu lạc bộ, toàn bộ Thành viên, Sự kiện, Vé đăng ký của CLB đó cũng sẽ tự động bị xóa theo để dọn dẹp bộ nhớ.*
