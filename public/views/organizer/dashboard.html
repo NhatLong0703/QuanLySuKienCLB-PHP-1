@@ -1,278 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Organizer Dashboard - ClubHub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng điều khiển - ClubHub</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: #FDFBF7; display: flex; min-height: 100vh; color: #1F2937; }
-        
-        /* Sidebar Styling */
-        .sidebar { width: 250px; background-color: #0F172A; color: #9CA3AF; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
-        .sidebar-brand-box { font-size: 24px; color: white; padding: 0 20px 20px; border-bottom: 1px solid #1E293B; margin-bottom: 20px; }
-        .sidebar-brand { font-family: 'Inter', sans-serif; font-size: 24px; color: white; }
+        body { font-family: 'Inter', sans-serif; background: #FDFBF7; display: flex; min-height: 100vh; color: #1F2937; }
+        .sidebar { width: 250px; background: #0F172A; color: #9CA3AF; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
+        .sidebar-brand { font-size: 24px; color: white; padding: 0 20px 20px; border-bottom: 1px solid #1E293B; margin-bottom: 20px; }
         .sidebar-brand span { display: block; font-size: 10px; font-weight: normal; letter-spacing: 2px; margin-top: 4px; color: #64748B; text-transform: uppercase; }
-        .sidebar-nav { flex: 1; overflow-y: auto; }
-        .sidebar-menu-title { font-size: 11px; letter-spacing: 1px; color: #475569; padding: 0; margin: 20px 20px 10px; text-transform: uppercase; }
-        .sidebar-menu a { display: flex; align-items: center; gap: 8px; width: auto; padding: 12px 20px; border-radius: 0; text-decoration: none; margin-bottom: 0; color: #9CA3AF; font-size: 14px; transition: all 0.2s; }
+        .sidebar-menu-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin: 20px 20px 10px; color: #475569; }
+        .sidebar-menu a { display: flex; align-items: center; padding: 12px 20px; color: #9CA3AF; text-decoration: none; font-size: 14px; transition: all 0.2s; }
         .sidebar-menu a:hover { color: white; }
-        .sidebar-menu a.active { background-color: #F59E0B; color: white; font-weight: 500; border-radius: 4px; margin: 0 10px; padding: 12px 10px; width: calc(100% - 20px); }
-        .sidebar-menu a.active .dot { margin-left: auto; width: 6px; height: 6px; border-radius: 50%; background-color: #fff; opacity: 0.7; }
-        .sidebar-menu a .icon { font-size: 12px; opacity: 0.7; }
+        .sidebar-menu a.active { background: #F59E0B; color: white; font-weight: 500; border-radius: 4px; margin: 0 10px; padding: 12px 10px; width: calc(100% - 20px); }
         .sidebar-user { margin-top: auto; padding: 20px; border-top: 1px solid #1E293B; display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #10B981; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; }
-        .user-info { font-size: 14px; font-weight: 400; color: #fff; }
-        .user-info span { display: block; font-size: 11px; color: #64748B; text-transform: uppercase; margin-top: 2px; font-weight: normal; }
-
-        /* Main Content */
-        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
-        .header { margin-bottom: 30px; }
-        .header h1 { font-family: 'Inter', sans-serif; font-size: 32px; color: #111827; margin-bottom: 8px; font-weight: 600; }
-        .header p { color: #6B7280; font-size: 14px; margin-top: 0; }
-
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 24px; margin-bottom: 28px; }
-        .stat-card { border-radius: 12px; padding: 28px 24px; background: #fff; border: 1px solid #E5E7EB; }
-        .stat-card.dark { background: #0F172A; color: #fff; border: none; padding-bottom: 24px; }
-        .stat-title { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px; display: block; }
-        .stat-card.dark .stat-title { color: #64748B; }
-        .stat-card:not(.dark) .stat-title { color: #6B7280; }
-        .stat-value { font-family: 'Inter', sans-serif; font-size: 48px; line-height: 1; font-weight: 500; }
-        .stat-card:not(.dark) .stat-value { color: #111827; }
-        .stat-desc { font-size: 12px; color: #6B7280; margin-top: 8px; }
-
-        /* Charts Rows */
-        .chart-row-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
-        .chart-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
-        .chart-card { background: #fff; border-radius: 12px; border: 1px solid #E5E7EB; padding: 22px 24px; }
-        .chart-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
-        .chart-subtitle { font-size: 12px; color: #6B7280; margin-bottom: 18px; }
-        .chart-container { position: relative; height: 200px; width: 100%; }
-
-        /* Table Section */
-        .table-section { background: #fff; border-radius: 12px; border: 1px solid #E5E7EB; overflow: hidden; }
-        .table-header { padding: 18px 24px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E5E7EB; }
-        .table-title { font-weight: 600; font-size: 15px; }
-        .btn-create { padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; background: #F59E0B; color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; }
-        .btn-create:hover { background: #D97706; }
-        
-        .list-row { display: grid; grid-template-columns: 80px 1fr 120px 140px 100px; padding: 12px 24px; border-bottom: 1px solid #F3F4F6; align-items: center; gap: 10px; }
-        .list-row:last-child { border-bottom: none; }
-        .list-header-row { padding: 12px 24px; border-bottom: 1px solid #E5E7EB; font-size: 11px; letter-spacing: 0.1em; color: #9CA3AF; text-transform: uppercase; display: grid; grid-template-columns: 80px 1fr 120px 140px 100px; gap: 10px; }
-        
-        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; text-transform: capitalize; }
-        .badge.active { background: #dcfce7; color: #15803d; }
-        .badge.draft { background: #fef9c3; color: #a16207; }
-        .badge.closed { background: #fee2e2; color: #b91c1c; }
-        
-        .img-placeholder { width: 80px; height: 50px; background: #E5E7EB; border-radius: 6px; display: inline-block; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #10B981; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+        .user-info { font-size: 14px; color: white; }
+        .user-info span { display: block; font-size: 11px; color: #64748B; text-transform: uppercase; margin-top: 2px; }
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; min-width: 0; }
+        .header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .header h1 { font-size: 32px; color: #111827; margin-bottom: 8px; }
+        .header p { color: #6B7280; font-size: 14px; }
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+        .btn-primary { background: #111827; color: white; }
+        .btn-primary:hover { background: #374151; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border: 1px solid #F3F4F6; border-radius: 12px; padding: 20px 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .stat-label { color: #9CA3AF; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+        .stat-value { color: #111827; font-size: 32px; font-weight: 600; margin-top: 12px; }
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #F3F4F6; overflow: hidden; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px; }
+        th { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #9CA3AF; padding: 16px 24px; border-bottom: 1px solid #F3F4F6; font-weight: 500; }
+        td { padding: 16px 24px; border-bottom: 1px solid #F3F4F6; font-size: 14px; color: #374151; vertical-align: middle; }
+        tr:hover { background: #F9FAFB; }
+        .event-title { font-weight: 500; color: #111827; }
+        .event-meta { font-size: 12px; color: #9CA3AF; margin-top: 4px; }
+        .event-thumb { width: 48px; height: 48px; border-radius: 8px; background: #F3F4F6 center / cover no-repeat; flex-shrink: 0; }
+        .badge { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; display: inline-flex; align-items: center; gap: 6px; }
+        .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+        .badge-upcoming { background: #DBEAFE; color: #1E40AF; }
+        .badge-upcoming::before { background: #3B82F6; }
+        .badge-completed { background: #F3F4F6; color: #4B5563; }
+        .badge-completed::before { background: #6B7280; }
+        .badge-cancelled { background: #FEE2E2; color: #991B1B; }
+        .badge-cancelled::before { background: #EF4444; }
+        .progress-wrapper { display: flex; align-items: center; gap: 10px; }
+        .progress-bar-bg { width: 80px; height: 4px; background: #E5E7EB; border-radius: 2px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; border-radius: 2px; }
+        .capacity-text { font-size: 13px; font-weight: 500; min-width: 45px; text-align: right; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #9CA3AF; }
+        @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .sidebar { width: 210px; } .main-content { padding: 24px 16px; } .header { align-items: flex-start; gap: 12px; flex-direction: column; } }
     </style>
 </head>
 <body>
     <script src="/assets/js/api.js"></script>
     <script>requireLogin(); requireRole("organizer");</script>
 
-    <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="sidebar-brand-box">
-            <div class="sidebar-brand">ClubHub<span>Management System</span></div>
-        </div>
-        <nav class="sidebar-nav sidebar-menu">
-            <div class="sidebar-menu-title">Navigation</div>
-            <a href="/views/organizer/dashboard.html" class="active"><span class="icon">◎</span> Dashboard<div class="dot"></div></a>
-            <a href="/views/organizer/clubs.html"><span class="icon">◆</span> Clubs</a>
-            <a href="/views/organizer/events.html"><span class="icon">◎</span> Events</a>
-            <a href="/views/organizer/registrations.html"><span class="icon">▣</span> Registrations</a>
-            <a href="/views/organizer/attendance.html"><span class="icon">✓</span> Attendance</a>
-            
-            <div class="sidebar-menu-title" style="margin-top: 20px;">System</div>
-            <a href="/views/organizer/settings.html"><span class="icon">⚙</span> Settings</a>
+        <div class="sidebar-brand">ClubHub<span>Management System</span></div>
+        <div class="sidebar-menu-title">Điều hướng</div>
+        <nav class="sidebar-menu">
+            <a href="/views/organizer/dashboard.html" class="active">○&nbsp; Bảng điều khiển</a>
+            <a href="/views/organizer/clubs.html">◈&nbsp; Câu lạc bộ</a>
+            <a href="/views/organizer/events.html">●&nbsp; Sự kiện</a>
+            <a href="/views/organizer/registrations.html">◫&nbsp; Đăng ký</a>
+            <a href="/views/organizer/attendance.html">✓&nbsp; Điểm danh</a>
+            <a href="/views/organizer/notifications.html">⊙&nbsp; Thông báo</a>
         </nav>
         <div class="sidebar-user" id="sidebarUser"></div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <div class="header">
-            <h1>Dashboard</h1>
-            <p>Overview of all clubs and events</p>
+            <div><h1>Bảng điều khiển</h1><p>Tổng quan các câu lạc bộ và sự kiện bạn quản lý.</p></div>
+            <a class="btn btn-primary" href="/views/organizer/events.html">+ Thêm sự kiện</a>
         </div>
 
-        <!-- Stats Grid -->
         <div class="stats-grid">
-            <div class="stat-card dark">
-                <span class="stat-title">Total Bookings</span>
-                <div class="stat-value" id="statBooked">0</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-title">Active Listings</span>
-                <div class="stat-value" id="statActive">0</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-title">Revenue</span>
-                <div class="stat-value" id="statRev" style="font-size:42px;">$0</div>
-                <div class="stat-desc">from paid listings</div>
-            </div>
+            <div class="stat-card"><div class="stat-label">Câu lạc bộ quản lý</div><div class="stat-value" id="statClubs">0</div></div>
+            <div class="stat-card"><div class="stat-label">Tổng sự kiện</div><div class="stat-value" id="statEvents">0</div></div>
+            <div class="stat-card"><div class="stat-label">Đang mở đăng ký</div><div class="stat-value" id="statOpen">0</div></div>
+            <div class="stat-card"><div class="stat-label">Lượt đăng ký</div><div class="stat-value" id="statBookings">0</div></div>
         </div>
 
-        <!-- Listings Table -->
-        <div class="table-section">
-            <div class="table-header">
-                <span class="table-title">All Listings</span>
-            </div>
-            <div class="list-header-row">
-                <div>Image</div>
-                <div>Title / Category</div>
-                <div>Status</div>
-                <div>Progress</div>
-                <div>Price</div>
-            </div>
-            <div id="listingsTableBody">
-                <p style="padding: 20px; text-align: center; color: #6B7280;">Loading...</p>
-            </div>
-            <div id="paginationControls" style="padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E5E7EB;">
-            </div>
+        <div class="table-container">
+            <table>
+                <thead><tr><th>Sự kiện</th><th>Câu lạc bộ</th><th>Địa điểm</th><th>Thời gian</th><th>Số lượng</th><th>Trạng thái</th></tr></thead>
+                <tbody id="tableBody"><tr><td colspan="6" class="empty-state">Đang tải...</td></tr></tbody>
+            </table>
         </div>
     </main>
 
     <script>
-        // Colors from Figma mockup
-        const C = { orange: '#F59E0B', violet: '#F59E0B', blue: '#2563EB', green: '#10B981', bg: '#F3F4F6', text: '#6B7280' };
-
-        let allClubs = [];
-        let allEvents = [];
-        let allRegs = [];
-        let currentPage = 1;
-        const itemsPerPage = 6;
+        let events = [];
 
         async function init() {
-            const u = getUser();
-            if(u) {
-                const initials = u.full_name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-                document.getElementById('sidebarUser').innerHTML = `
-                    <div class="avatar">${initials}</div>
-                    <div>
-                        <div class="user-info">${u.full_name}</div>
-                        <div style="font-size:11px; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em; margin-top:2px;">${u.role}</div>
-                    </div>
-                `;
+            const user = getUser();
+            if (user) {
+                const initials = user.full_name.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase();
+                document.getElementById('sidebarUser').innerHTML = `<div class="avatar">${initials}</div><div class="user-info">${user.full_name}<span>Quản lý</span></div>`;
             }
 
             try {
-                // Fetch actual data
-                const [clubsRes, eventsRes, regsRes, myClubsRes] = await Promise.all([
+                const [clubsRes, eventsRes, registrationsRes, managersRes] = await Promise.all([
                     apiCall('/club/index?limit=-1'),
                     apiCall('/event/index?limit=-1'),
                     apiCall('/registration/all'),
                     apiCall('/club-manager/my-clubs')
                 ]);
+                const managed = managersRes.data || [];
+                const clubIds = managed.map(club => Number(club.club_id));
+                const clubs = (clubsRes.data.data || []).filter(club => clubIds.includes(Number(club.id)));
+                events = (eventsRes.data.data || []).filter(event => clubIds.includes(Number(event.club_id)));
+                const eventIds = events.map(event => Number(event.id));
+                const registrations = (registrationsRes.data || []).filter(reg => eventIds.includes(Number(reg.event_id)));
 
-                const allSystemClubs = clubsRes.data.data || [];
-                const allSystemEvents = eventsRes.data.data || [];
-                const myManagedClubs = myClubsRes.data || [];
-
-                allClubs = allSystemClubs.filter(c => myManagedClubs.some(mc => mc.club_id === c.id));
-                allEvents = allSystemEvents.filter(e => myManagedClubs.some(mc => mc.club_id === e.club_id));
-                
-                // Only count registrations for our events
-                const myEventIds = allEvents.map(e => e.id);
-                allRegs = (regsRes.data || []).filter(r => myEventIds.includes(r.event_id));
-
-                calculateAndRenderStats();
-                loadPage(1);
-            } catch (err) {
-                console.error(err);
-                alert("Lỗi tải dữ liệu. Bạn hãy F5 lại trang.");
+                document.getElementById('statClubs').textContent = clubs.length;
+                document.getElementById('statEvents').textContent = events.length;
+                document.getElementById('statOpen').textContent = events.filter(event => event.status === 'open').length;
+                document.getElementById('statBookings').textContent = registrations.length;
+                renderEvents();
+            } catch (error) {
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="empty-state">Không thể tải dữ liệu. Vui lòng thử lại.</td></tr>`;
+                console.error(error);
             }
         }
 
-        function calculateAndRenderStats() {
-            const activeClubs = allClubs.filter(c => c.status === 'active').length;
-            const activeEvents = allEvents.filter(e => e.status === 'open').length;
-            const totalBooked = allRegs.length; // Approximate total bookings
-            
-            // For revenue, approximate based on some data or fake it if no real price column exists
-            // In ClubHub, events might not have a price column yet. Let's show a simulated revenue based on bookings * 15
-            const revenue = totalBooked * 15; 
-
-            document.getElementById('statActive').innerText = activeClubs + activeEvents;
-            document.getElementById('statBooked').innerText = totalBooked;
-            document.getElementById('statRev').innerText = "$" + revenue.toLocaleString();
-        }
-
-        async function loadPage(page) {
-            currentPage = page;
-            const tbody = document.getElementById('listingsTableBody');
-            const pagination = document.getElementById('paginationControls');
-            
-            tbody.innerHTML = '<p style="padding: 20px; text-align: center; color: #6B7280;">Loading...</p>';
-
-            try {
-                const res = await apiCall(`/dashboard/listings?page=${page}&limit=${itemsPerPage}`);
-                if (res.status === 'success') {
-                    renderTable(res.data);
-                } else {
-                    tbody.innerHTML = '<p style="padding: 20px; text-align: center; color: red;">Failed to load listings.</p>';
-                }
-            } catch (err) {
-                console.error(err);
-                tbody.innerHTML = '<p style="padding: 20px; text-align: center; color: red;">Network error.</p>';
-            }
-        }
-
-        function renderTable(pageData) {
-            const tbody = document.getElementById('listingsTableBody');
-            const pagination = document.getElementById('paginationControls');
-            
-            const currentListings = pageData.data;
-
-            if(currentListings.length === 0) {
-                tbody.innerHTML = '<p style="padding: 20px; text-align: center; color: #6B7280;">No listings available.</p>';
-                pagination.innerHTML = '';
+        function renderEvents() {
+            const now = new Date();
+            const recentEvents = [...events].sort((a, b) => new Date(a.start_time) - new Date(b.start_time)).slice(0, 8);
+            if (!recentEvents.length) {
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có sự kiện nào.</td></tr>';
                 return;
             }
 
-            let html = '';
-            currentListings.forEach(l => {
-                let badgeClass = l.status === 'active' || l.status === 'open' ? 'active' : (l.status === 'closed' ? 'closed' : 'draft');
-                let imgHtml = l.img ? `<img src="${l.img}" style="width:80px; height:50px; object-fit:cover; border-radius:6px;">` : `<div class="img-placeholder"></div>`;
-                
-                let pct = l.total > 0 ? Math.round((l.booked/l.total)*100) : 0;
-
-                html += `<div class="list-row">
-                    <div>${imgHtml}</div>
-                    <div>
-                        <div style="font-weight:600; font-size:14px; color:#1a1a1a;">${l.title}</div>
-                        <div style="font-size:12px; color:#6B7280; margin-top:2px;">${l.cat}</div>
-                    </div>
-                    <div><span class="badge ${badgeClass}">${l.status}</span></div>
-                    <div>
-                        <div style="font-size:12px; color:#6B7280; margin-bottom:4px; display:flex; justify-content:space-between;"><span>${l.booked}/${l.total} spots</span><span>${pct}%</span></div>
-                        <div style="width:100%; height:4px; background:#E5E7EB; border-radius:2px;"><div style="width:${pct}%; height:100%; background:${pct>=100?C.green:C.violet}; border-radius:2px;"></div></div>
-                    </div>
-                    <div style="font-size:14px; color:#1a1a1a;">${l.price > 0 ? '$'+l.price : 'Free'}</div>
-                </div>`;
-            });
-            tbody.innerHTML = html;
-
-            const totalPages = pageData.total_pages;
-            const startIndex = (pageData.page - 1) * pageData.limit;
-
-            // Render pagination controls
-            pagination.innerHTML = `
-                <div style="font-size: 13px; color: #6B7280;">
-                    Showing ${startIndex + 1} to ${Math.min(startIndex + pageData.limit, pageData.total)} of ${pageData.total}
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button onclick="changePage(-1)" ${pageData.page === 1 ? 'disabled' : ''} style="padding: 6px 12px; border: 1px solid #E5E7EB; background: ${pageData.page === 1 ? '#F9FAFB' : '#fff'}; color: ${pageData.page === 1 ? '#9CA3AF' : '#111827'}; border-radius: 6px; cursor: ${pageData.page === 1 ? 'not-allowed' : 'pointer'};">Previous</button>
-                    <button onclick="changePage(1)" ${pageData.page === totalPages ? 'disabled' : ''} style="padding: 6px 12px; border: 1px solid #E5E7EB; background: ${pageData.page === totalPages ? '#F9FAFB' : '#fff'}; color: ${pageData.page === totalPages ? '#9CA3AF' : '#111827'}; border-radius: 6px; cursor: ${pageData.page === totalPages ? 'not-allowed' : 'pointer'};">Next</button>
-                </div>
-            `;
-        }
-
-        function changePage(delta) {
-            loadPage(currentPage + delta);
+            document.getElementById('tableBody').innerHTML = recentEvents.map(event => {
+                const end = new Date(event.end_time);
+                const completed = end < now || event.status === 'closed';
+                const cancelled = event.status === 'cancelled';
+                const statusClass = cancelled ? 'badge-cancelled' : (completed ? 'badge-completed' : 'badge-upcoming');
+                const statusText = cancelled ? 'Đã hủy' : (completed ? 'Đã hoàn thành' : 'Sắp tới');
+                const registered = Math.max(0, Number(event.capacity) - Number(event.slots_left || event.registered_count || 0));
+                const percent = event.capacity ? Math.min(100, Math.round(registered / Number(event.capacity) * 100)) : 0;
+                const date = new Date(event.start_time);
+                const dateText = date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const timeText = date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                return `<tr>
+                    <td><div style="display:flex;align-items:center;gap:12px"><div class="event-thumb" style="background-image:url('${event.image || ''}')"></div><div><div class="event-title">${event.title}</div><div class="event-meta">Hạn đăng ký: ${new Date(event.registration_deadline).toLocaleDateString('vi-VN')}</div></div></div></td>
+                    <td>${event.club_name || 'Câu lạc bộ'}</td><td>${event.location || 'Chưa cập nhật'}</td>
+                    <td><div style="font-weight:500">${dateText}</div><div class="event-meta">${timeText}</div></td>
+                    <td><div class="progress-wrapper"><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${percent}%;background:#10B981"></div></div><span class="capacity-text">${registered}/${event.capacity}</span></div></td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                </tr>`;
+            }).join('');
         }
 
         init();
