@@ -61,40 +61,69 @@
 
     <aside class="sidebar">
         <div class="sidebar-brand">ClubHub<span>Management System</span></div>
-        <div class="sidebar-menu-title">Điều hướng</div>
+        <div class="sidebar-menu-title" data-i18n="navigation">Điều hướng</div>
         <nav class="sidebar-menu">
-            <a href="/views/organizer/dashboard.html" class="active">○&nbsp; Bảng điều khiển</a>
-            <a href="/views/organizer/clubs.html">◈&nbsp; Câu lạc bộ</a>
-            <a href="/views/organizer/events.html">●&nbsp; Sự kiện</a>
-            <a href="/views/organizer/registrations.html">◫&nbsp; Đăng ký</a>
-            <a href="/views/organizer/attendance.html">✓&nbsp; Điểm danh</a>
-            <a href="/views/organizer/notifications.html">⊙&nbsp; Thông báo</a>
+            <a href="/views/organizer/dashboard.html" class="active">○&nbsp; <span data-i18n="dashboard">Bảng điều khiển</span></a>
+            <a href="/views/organizer/clubs.html">◈&nbsp; <span data-i18n="clubs">Câu lạc bộ</span></a>
+            <a href="/views/organizer/events.html">●&nbsp; <span data-i18n="events">Sự kiện</span></a>
+            <a href="/views/organizer/registrations.html">◫&nbsp; <span data-i18n="registrations">Đăng ký</span></a>
+            <a href="/views/organizer/attendance.html">✓&nbsp; <span data-i18n="attendance">Điểm danh</span></a>
+            <a href="/views/organizer/notifications.html">⊙&nbsp; <span data-i18n="notifications">Thông báo</span></a>
+            <div class="sidebar-menu-title" style="margin-top: 20px;" data-i18n="system">Hệ thống</div>
+            <a href="/views/organizer/settings.html">⚙&nbsp; <span data-i18n="settings">Cài đặt</span></a>
         </nav>
         <div class="sidebar-user" id="sidebarUser"></div>
     </aside>
 
     <main class="main-content">
         <div class="header">
-            <div><h1>Bảng điều khiển</h1><p>Tổng quan các câu lạc bộ và sự kiện bạn quản lý.</p></div>
-            <a class="btn btn-primary" href="/views/organizer/events.html">+ Thêm sự kiện</a>
+            <div><h1 data-i18n="dashboard">Bảng điều khiển</h1><p data-i18n="dashboardSubtitle">Tổng quan các câu lạc bộ và sự kiện bạn quản lý.</p></div>
+            <a class="btn btn-primary" href="/views/organizer/events.html" data-i18n="addEvent">+ Thêm sự kiện</a>
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card"><div class="stat-label">Câu lạc bộ quản lý</div><div class="stat-value" id="statClubs">0</div></div>
-            <div class="stat-card"><div class="stat-label">Tổng sự kiện</div><div class="stat-value" id="statEvents">0</div></div>
-            <div class="stat-card"><div class="stat-label">Đang mở đăng ký</div><div class="stat-value" id="statOpen">0</div></div>
-            <div class="stat-card"><div class="stat-label">Lượt đăng ký</div><div class="stat-value" id="statBookings">0</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="managedClubs">Câu lạc bộ quản lý</div><div class="stat-value" id="statClubs">0</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="totalEvents">Tổng sự kiện</div><div class="stat-value" id="statEvents">0</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="openRegistration">Đang mở đăng ký</div><div class="stat-value" id="statOpen">0</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="registrationsCount">Lượt đăng ký</div><div class="stat-value" id="statBookings">0</div></div>
         </div>
 
         <div class="table-container">
             <table>
-                <thead><tr><th>Sự kiện</th><th>Câu lạc bộ</th><th>Địa điểm</th><th>Thời gian</th><th>Số lượng</th><th>Trạng thái</th></tr></thead>
-                <tbody id="tableBody"><tr><td colspan="6" class="empty-state">Đang tải...</td></tr></tbody>
+                <thead><tr><th data-i18n="event">Sự kiện</th><th data-i18n="club">Câu lạc bộ</th><th data-i18n="location">Địa điểm</th><th data-i18n="time">Thời gian</th><th data-i18n="capacity">Số lượng</th><th data-i18n="status">Trạng thái</th></tr></thead>
+                <tbody id="tableBody"><tr><td colspan="6" class="empty-state" data-i18n="loading">Đang tải...</td></tr></tbody>
             </table>
         </div>
     </main>
 
     <script>
+        const dashboardTranslations = {
+            en: {
+                navigation: 'Navigation', dashboard: 'Dashboard', clubs: 'Clubs', events: 'Events', registrations: 'Registrations', attendance: 'Attendance', notifications: 'Notifications', system: 'System', settings: 'Settings', dashboardSubtitle: 'Overview of the clubs and events you manage.', addEvent: '+ Add event', managedClubs: 'Managed clubs', totalEvents: 'Total events', openRegistration: 'Open registration', registrationsCount: 'Registrations', event: 'Event', club: 'Club', location: 'Location', time: 'Time', capacity: 'Capacity', status: 'Status', loading: 'Loading...', noEvents: 'No events yet.', loadError: 'Unable to load data. Please try again.', deadline: 'Registration deadline', clubFallback: 'Club', locationFallback: 'Not updated', cancelled: 'Cancelled', completed: 'Completed', upcoming: 'Upcoming', manager: 'Manager'
+            },
+            vi: {
+                navigation: 'Điều hướng', dashboard: 'Bảng điều khiển', clubs: 'Câu lạc bộ', events: 'Sự kiện', registrations: 'Đăng ký', attendance: 'Điểm danh', notifications: 'Thông báo', system: 'Hệ thống', settings: 'Cài đặt', dashboardSubtitle: 'Tổng quan các câu lạc bộ và sự kiện bạn quản lý.', addEvent: '+ Thêm sự kiện', managedClubs: 'Câu lạc bộ quản lý', totalEvents: 'Tổng sự kiện', openRegistration: 'Đang mở đăng ký', registrationsCount: 'Lượt đăng ký', event: 'Sự kiện', club: 'Câu lạc bộ', location: 'Địa điểm', time: 'Thời gian', capacity: 'Số lượng', status: 'Trạng thái', loading: 'Đang tải...', noEvents: 'Chưa có sự kiện nào.', loadError: 'Không thể tải dữ liệu. Vui lòng thử lại.', deadline: 'Hạn đăng ký', clubFallback: 'Câu lạc bộ', locationFallback: 'Chưa cập nhật', cancelled: 'Đã hủy', completed: 'Đã hoàn thành', upcoming: 'Sắp tới', manager: 'Quản lý'
+            },
+            cn: {
+                navigation: '导航', dashboard: '控制面板', clubs: '俱乐部', events: '活动', registrations: '报名', attendance: '出勤', notifications: '通知', system: '系统', settings: '设置', dashboardSubtitle: '您管理的俱乐部和活动概览。', addEvent: '+ 添加活动', managedClubs: '管理的俱乐部', totalEvents: '活动总数', openRegistration: '开放报名', registrationsCount: '报名人数', event: '活动', club: '俱乐部', location: '地点', time: '时间', capacity: '人数', status: '状态', loading: '加载中...', noEvents: '暂无活动。', loadError: '无法加载数据，请重试。', deadline: '报名截止', clubFallback: '俱乐部', locationFallback: '未更新', cancelled: '已取消', completed: '已完成', upcoming: '即将开始', manager: '管理者'
+            }
+        };
+        let dashboardLanguage = 'vi';
+
+        function dashboardText(key) {
+            return (dashboardTranslations[dashboardLanguage] || dashboardTranslations.vi)[key] || key;
+        }
+
+        function applyDashboardLanguage() {
+            const role = typeof getRole === 'function' ? getRole() : 'organizer';
+            dashboardLanguage = localStorage.getItem(`clubhub_lang_${role}`) || 'vi';
+            if (!dashboardTranslations[dashboardLanguage]) dashboardLanguage = 'vi';
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                element.textContent = dashboardText(element.dataset.i18n);
+            });
+            document.documentElement.lang = dashboardLanguage === 'cn' ? 'zh' : dashboardLanguage;
+        }
+
         let events = [];
 
         async function init() {
@@ -124,7 +153,7 @@
                 document.getElementById('statBookings').textContent = registrations.length;
                 renderEvents();
             } catch (error) {
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="empty-state">Không thể tải dữ liệu. Vui lòng thử lại.</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="empty-state">${dashboardText('loadError')}</td></tr>`;
                 console.error(error);
             }
         }
@@ -133,7 +162,7 @@
             const now = new Date();
             const recentEvents = [...events].sort((a, b) => new Date(a.start_time) - new Date(b.start_time)).slice(0, 8);
             if (!recentEvents.length) {
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có sự kiện nào.</td></tr>';
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="empty-state">${dashboardText('noEvents')}</td></tr>`;
                 return;
             }
 
@@ -142,15 +171,15 @@
                 const completed = end < now || event.status === 'closed';
                 const cancelled = event.status === 'cancelled';
                 const statusClass = cancelled ? 'badge-cancelled' : (completed ? 'badge-completed' : 'badge-upcoming');
-                const statusText = cancelled ? 'Đã hủy' : (completed ? 'Đã hoàn thành' : 'Sắp tới');
+                const statusText = cancelled ? dashboardText('cancelled') : (completed ? dashboardText('completed') : dashboardText('upcoming'));
                 const registered = Math.max(0, Number(event.capacity) - Number(event.slots_left || event.registered_count || 0));
                 const percent = event.capacity ? Math.min(100, Math.round(registered / Number(event.capacity) * 100)) : 0;
                 const date = new Date(event.start_time);
                 const dateText = date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
                 const timeText = date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
                 return `<tr>
-                    <td><div style="display:flex;align-items:center;gap:12px"><div class="event-thumb" style="background-image:url('${event.image || ''}')"></div><div><div class="event-title">${event.title}</div><div class="event-meta">Hạn đăng ký: ${new Date(event.registration_deadline).toLocaleDateString('vi-VN')}</div></div></div></td>
-                    <td>${event.club_name || 'Câu lạc bộ'}</td><td>${event.location || 'Chưa cập nhật'}</td>
+                    <td><div style="display:flex;align-items:center;gap:12px"><div class="event-thumb" style="background-image:url('${event.image || ''}')"></div><div><div class="event-title">${event.title}</div><div class="event-meta">${dashboardText('deadline')}: ${new Date(event.registration_deadline).toLocaleDateString(dashboardLanguage === 'vi' ? 'vi-VN' : dashboardLanguage === 'cn' ? 'zh-CN' : 'en-US')}</div></div></div></td>
+                    <td>${event.club_name || dashboardText('clubFallback')}</td><td>${event.location || dashboardText('locationFallback')}</td>
                     <td><div style="font-weight:500">${dateText}</div><div class="event-meta">${timeText}</div></td>
                     <td><div class="progress-wrapper"><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${percent}%;background:#10B981"></div></div><span class="capacity-text">${registered}/${event.capacity}</span></div></td>
                     <td><span class="badge ${statusClass}">${statusText}</span></td>
@@ -158,6 +187,7 @@
             }).join('');
         }
 
+        applyDashboardLanguage();
         init();
     </script>
 </body>
