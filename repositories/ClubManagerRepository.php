@@ -13,6 +13,12 @@ class ClubManagerRepository extends BaseRepository {
         return $stmt->rowCount();
     }
 
+    public function isManager($clubId, $userId) {
+        $stmt = $this->db->prepare("SELECT 1 FROM club_managers WHERE club_id = :club_id AND user_id = :user_id");
+        $stmt->execute(['club_id' => $clubId, 'user_id' => $userId]);
+        return (bool)$stmt->fetchColumn();
+    }
+
     public function findByClub($clubId) {
         $stmt = $this->db->prepare("
             SELECT cm.*, u.full_name, u.email 

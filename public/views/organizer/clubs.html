@@ -247,15 +247,21 @@
 
         async function loadData() {
             try {
-                const [clubsRes, eventsRes, managersRes] = await Promise.all([
+                const [clubsRes, eventsRes, managersRes, myClubsRes] = await Promise.all([
                     apiCall('/club/index?limit=-1'),
                     apiCall('/event/index?limit=-1'),
-                    apiCall('/club-manager/all')
+                    apiCall('/club-manager/all'),
+                    apiCall('/club-manager/my-clubs')
                 ]);
                 
-                allClubs = clubsRes.data.data;
-                allEvents = eventsRes.data.data;
-                allManagers = managersRes.data;
+                const allSystemClubs = clubsRes.data.data || [];
+                const myManagedClubs = myClubsRes.data || [];
+                
+                // Filter clubs to ONLY those managed by this organizer
+                allClubs = allSystemClubs.filter(c => myManagedClubs.some(mc => mc.club_id === c.id));
+                
+                allEvents = eventsRes.data.data || [];
+                allManagers = managersRes.data || [];
 
                 const activeCount = allClubs.filter(c => c.status === 'active').length;
                 document.getElementById('totalCount').innerText = `${allClubs.length} clubs · ${activeCount} active`;

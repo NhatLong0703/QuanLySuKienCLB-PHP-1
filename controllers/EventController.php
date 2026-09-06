@@ -44,6 +44,13 @@ class EventController extends BaseController {
         foreach($required as $f) {
             if(empty($d[$f])) return $this->json(['status'=>'error','message'=>"Thieu truong: $f"],400);
         }
+
+        if ($user['role'] !== 'admin') {
+            $cmRepo = new ClubManagerRepository();
+            if (!$cmRepo->isManager($d['club_id'], $user['id'])) {
+                return $this->json(['status'=>'error','message'=>'Ban khong phai quan ly cua CLB nay, khong the tao su kien'],403);
+            }
+        }
         
         $d['created_by'] = $user['id'];
         $d['status'] = $d['status'] ?? 'draft';
@@ -71,8 +78,14 @@ class EventController extends BaseController {
         if (!$event) return $this->json(['status'=>'error','message'=>'Khong tim thay su kien'],404);
         
         $user = $this->requireCurrentUser();
-        if ($user['role'] !== 'admin' && $user['role'] !== 'organizer') {
-            return $this->json(['status'=>'error','message'=>'Ban khong co quyen cap nhat su kien'],403);
+        if ($user['role'] !== 'admin') {
+            if ($user['role'] !== 'organizer') {
+                return $this->json(['status'=>'error','message'=>'Ban khong co quyen cap nhat su kien'],403);
+            }
+            $cmRepo = new ClubManagerRepository();
+            if (!$cmRepo->isManager($event['club_id'], $user['id'])) {
+                return $this->json(['status'=>'error','message'=>'Ban khong phai quan ly cua CLB nay'],403);
+            }
         }
 
         $d = $this->getInputData();
@@ -97,8 +110,14 @@ class EventController extends BaseController {
         if (!$event) return $this->json(['status'=>'error','message'=>'Khong tim thay su kien'],404);
         
         $user = $this->requireCurrentUser();
-        if ($user['role'] !== 'admin' && $user['role'] !== 'organizer') {
-            return $this->json(['status'=>'error','message'=>'Ban khong co quyen xoa su kien'],403);
+        if ($user['role'] !== 'admin') {
+            if ($user['role'] !== 'organizer') {
+                return $this->json(['status'=>'error','message'=>'Ban khong co quyen xoa su kien'],403);
+            }
+            $cmRepo = new ClubManagerRepository();
+            if (!$cmRepo->isManager($event['club_id'], $user['id'])) {
+                return $this->json(['status'=>'error','message'=>'Ban khong phai quan ly cua CLB nay'],403);
+            }
         }
 
         $this->eventRepo->delete($id);

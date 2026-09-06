@@ -246,7 +246,10 @@
             // load clubs for select dropdown
             try {
                 const cres = await apiCall('/club/index?limit=-1');
-                clubsList = cres.data.data;
+                const myClubsRes = await apiCall('/club-manager/my-clubs');
+                const myManagedClubs = myClubsRes.data || [];
+                clubsList = (cres.data.data || []).filter(c => myManagedClubs.some(mc => mc.club_id === c.id));
+                
                 const select = document.getElementById('evClub');
                 select.innerHTML = '<option value="">-- Select Club --</option>' + clubsList.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
             } catch(e) {}
@@ -255,7 +258,10 @@
         async function loadData() {
             try {
                 const res = await apiCall('/event/index?limit=-1');
-                allEvents = res.data.data;
+                const myClubsRes = await apiCall('/club-manager/my-clubs');
+                const myManagedClubs = myClubsRes.data || [];
+                
+                allEvents = (res.data.data || []).filter(e => myManagedClubs.some(mc => mc.club_id === e.club_id));
                 
                 const uniqueClubs = [...new Set(allEvents.map(e => e.club_id))];
                 uniqueClubsCount = uniqueClubs.length;

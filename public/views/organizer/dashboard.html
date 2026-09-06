@@ -158,15 +158,23 @@
 
             try {
                 // Fetch actual data
-                const [clubsRes, eventsRes, regsRes] = await Promise.all([
+                const [clubsRes, eventsRes, regsRes, myClubsRes] = await Promise.all([
                     apiCall('/club/index?limit=-1'),
                     apiCall('/event/index?limit=-1'),
-                    apiCall('/registration/all')
+                    apiCall('/registration/all'),
+                    apiCall('/club-manager/my-clubs')
                 ]);
 
-                allClubs = clubsRes.data.data;
-                allEvents = eventsRes.data.data || [];
-                allRegs = regsRes.data || [];
+                const allSystemClubs = clubsRes.data.data || [];
+                const allSystemEvents = eventsRes.data.data || [];
+                const myManagedClubs = myClubsRes.data || [];
+
+                allClubs = allSystemClubs.filter(c => myManagedClubs.some(mc => mc.club_id === c.id));
+                allEvents = allSystemEvents.filter(e => myManagedClubs.some(mc => mc.club_id === e.club_id));
+                
+                // Only count registrations for our events
+                const myEventIds = allEvents.map(e => e.id);
+                allRegs = (regsRes.data || []).filter(r => myEventIds.includes(r.event_id));
 
                 calculateAndRenderStats();
                 loadPage(1);

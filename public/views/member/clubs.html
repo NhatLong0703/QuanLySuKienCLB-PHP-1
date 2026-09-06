@@ -245,25 +245,49 @@
             const tbody = document.getElementById('membersTableBody');
             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">Loading...</td></tr>';
             try {
-                const res = await apiCall(`/club/members?club_id=${clubId}`);
-                const members = res.data || [];
+                const [memRes, mgrRes] = await Promise.all([
+                    apiCall(`/club/members?club_id=${clubId}`),
+                    apiCall(`/club-manager/list-by-club?club_id=${clubId}`)
+                ]);
+                
+                const members = memRes.data || [];
+                const managers = mgrRes.data || [];
+                
                 // Members can only see approved members
                 const approvedMembers = members.filter(m => m.status === 'approved');
                 
-                if (approvedMembers.length === 0) {
+                const allPeople = new Map(); // key: email, value: object
+                
+                // Add members first
+                approvedMembers.forEach(m => {
+                    allPeople.set(m.email, { ...m, is_manager: false });
+                });
+                
+                // Add managers, overriding members if they exist
+                managers.forEach(m => {
+                    allPeople.set(m.email, { ...m, is_manager: true });
+                });
+                
+                if (allPeople.size === 0) {
                     tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#9CA3AF;">Chưa có thành viên nào.</td></tr>';
                     return;
                 }
                 
                 let html = '';
-                approvedMembers.forEach(m => {
+                // Sort managers first
+                const sortedPeople = Array.from(allPeople.values()).sort((a, b) => (b.is_manager ? 1 : 0) - (a.is_manager ? 1 : 0));
+                
+                sortedPeople.forEach(m => {
+                    let badge = m.is_manager 
+                        ? `<span style="background: #FEF3C7; color: #92400E; padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500;">👑 Quản lý</span>`
+                        : `<span style="background: #D1FAE5; color: #065F46; padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500;">Thành viên</span>`;
                     html += `
                         <tr style="border-bottom:1px solid #E5E7EB;">
                             <td style="padding:15px 10px; white-space:nowrap;">
                                 <strong style="font-size:16px;">${m.full_name}</strong>
                             </td>
                             <td style="padding:15px 10px; color:#6B7280; font-size:14px;">${m.email}</td>
-                            <td style="padding:15px 10px;"><span style="background: #D1FAE5; color: #065F46; padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500;">Thành viên</span></td>
+                            <td style="padding:15px 10px;">${badge}</td>
                         </tr>
                     `;
                 });

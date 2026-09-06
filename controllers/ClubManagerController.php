@@ -20,6 +20,14 @@ class ClubManagerController extends BaseController {
         }
 
         $this->cmRepo->assign($input['club_id'], $input['user_id']);
+        
+        // Auto-upgrade role to organizer if they are a member
+        $userRepo = new UserRepository();
+        $targetUser = $userRepo->findById($input['user_id']);
+        if ($targetUser && $targetUser->getRole() === 'member') {
+            $userRepo->update($input['user_id'], ['role' => 'organizer']);
+        }
+
         return $this->json(['status' => 'success', 'message' => 'Phan cong thanh cong']);
     }
 
@@ -37,6 +45,18 @@ class ClubManagerController extends BaseController {
         }
 
         $this->cmRepo->revoke($input['club_id'], $input['user_id']);
+        
+        // Downgrade to member if they no longer manage any clubs
+        $managedClubs = $this->cmRepo->findByUser($input['user_id']);
+        if (empty($managedClubs)) {
+            $userRepo = new UserRepository();
+            $targetUser = $userRepo->findById($input['user_id']);
+            // Only downgrade if they are an organizer (don't downgrade admins)
+            if ($targetUser && $targetUser->getRole() === 'organizer') {
+                $userRepo->update($input['user_id'], ['role' => 'member']);
+            }
+        }
+
         return $this->json(['status' => 'success', 'message' => 'Huy phan cong thanh cong']);
     }
 
@@ -56,6 +76,15 @@ class ClubManagerController extends BaseController {
         return $this->json([
             'status' => 'success',
             'data' => $this->cmRepo->getAll()
+        ]);
+    }
+
+    // GET /api/club-manager/my-clubs
+    public function myClubs() {
+        $user = $this->requireCurrentUser();
+        return $this->json([
+            'status' => 'success',
+            'data' => $this->cmRepo->findByUser($user['id'])
         ]);
     }
 }

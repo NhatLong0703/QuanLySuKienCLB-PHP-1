@@ -204,6 +204,42 @@
         </div>
     </div>
 
+    <!-- Managers Modal -->
+    <div class="modal-overlay" id="managersModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000;">
+        <div class="modal" style="background: white; border-radius: 12px; width: 90vw; max-width: 600px; padding: 2rem; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #E5E7EB; padding-bottom: 15px;">
+                <h2 style="font-size: 20px; margin: 0; color: #111827;">Phân công Quản lý CLB</h2>
+                <button class="close-btn" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #6B7280;" onclick="closeManagersModal()">&times;</button>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Thêm Quản lý mới</label>
+                <div style="display: flex; gap: 10px;">
+                    <select id="managerSelect" class="form-control" style="flex:1;">
+                        <option value="">-- Chọn người dùng --</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="assignManager()">Phân công</button>
+                </div>
+            </div>
+
+            <div class="modal-body" style="overflow-y: auto; padding: 0;">
+                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Danh sách Quản lý hiện tại</label>
+                <table style="width:100%; text-align:left; border-collapse:collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="border-bottom:1px solid #E5E7EB; background: #F9FAFB;">
+                            <th style="padding:10px;">Người dùng</th>
+                            <th style="padding:10px;">Email</th>
+                            <th style="padding:10px; width:80px; text-align:right;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="managersTableBody">
+                        <tr><td colspan="3" style="text-align:center; padding:20px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script>
         let allClubs = [];
         let allEvents = [];
@@ -309,6 +345,7 @@
                             <span class="stat-val text">${managerName}</span>
                         </div>
                         <div class="card-actions">
+                            <button class="btn btn-outline" style="padding:4px 8px; font-size:12px; margin-right:5px; border-radius:4px;" onclick="openManagersModal(${club.id})">👤 Quản lý</button>
                             <button class="btn btn-outline" style="padding:4px 8px; font-size:12px; margin-right:5px; border-radius:4px;" onclick="openMembersModal(${club.id})">👥 Members</button>
                             <button class="icon-btn icon-edit" onclick="openModal(${club.id})" title="Edit">✏️</button>
                             <button class="icon-btn icon-delete" onclick="deleteClub(${club.id})" title="Delete">🗑️</button>
@@ -450,6 +487,89 @@
                 tbody.innerHTML = html;
             } catch (e) {
                 tbody.innerHTML = `<tr><td colspan="3" style="color:red; text-align:center; padding:20px;">${e.message}</td></tr>`;
+            }
+        }
+
+        // --- Club Managers Modal Logic ---
+        let currentManageClubId = null;
+        let allUsersList = [];
+
+        async function loadAllUsersForSelect() {
+            if(allUsersList.length > 0) return; // already loaded
+            try {
+                const res = await apiCall('/user/list?limit=-1');
+                allUsersList = res.data.data || [];
+                const sel = document.getElementById('managerSelect');
+                let html = '<option value="">-- Chọn người dùng --</option>';
+                allUsersList.forEach(u => {
+                    html += `<option value="${u.id}">${u.full_name} (${u.email})</option>`;
+                });
+                sel.innerHTML = html;
+            } catch(e) { console.error('Failed to load users', e); }
+        }
+
+        function openManagersModal(clubId) {
+            currentManageClubId = clubId;
+            document.getElementById('managersModal').style.display = 'flex';
+            loadAllUsersForSelect();
+            renderManagersList();
+        }
+
+        function closeManagersModal() {
+            document.getElementById('managersModal').style.display = 'none';
+        }
+
+        function renderManagersList() {
+            const tbody = document.getElementById('managersTableBody');
+            const clubManagers = allManagers.filter(m => m.club_id === currentManageClubId);
+            
+            if (clubManagers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#9CA3AF;">Chưa có quản lý nào.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            clubManagers.forEach(m => {
+                html += `
+                    <tr style="border-bottom:1px solid #E5E7EB;">
+                        <td style="padding:10px;"><strong>${m.full_name}</strong></td>
+                        <td style="padding:10px; color:#6B7280;">${m.email}</td>
+                        <td style="padding:10px; text-align:right;">
+                            <button class="btn btn-outline" style="border-color:#EF4444; color:#EF4444; padding:4px 8px; font-size:12px;" onclick="revokeManager(${m.user_id})">Xóa</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        async function assignManager() {
+            const userId = document.getElementById('managerSelect').value;
+            if(!userId) { alert("Vui lòng chọn người dùng!"); return; }
+            try {
+                await apiCall('/club-manager/assign', 'POST', { club_id: currentManageClubId, user_id: userId });
+                alert("Phân công thành công!");
+                // Reload managers globally to update UI
+                const mRes = await apiCall('/club-manager/all');
+                allManagers = mRes.data;
+                renderManagersList();
+                loadData(currentPage); // update stats on main screen
+            } catch(e) {
+                alert(e.message);
+            }
+        }
+
+        async function revokeManager(userId) {
+            if(!confirm("Bạn có chắc chắn muốn xóa quyền quản lý của người này?")) return;
+            try {
+                await apiCall('/club-manager/revoke', 'POST', { club_id: currentManageClubId, user_id: userId });
+                alert("Đã hủy phân công!");
+                const mRes = await apiCall('/club-manager/all');
+                allManagers = mRes.data;
+                renderManagersList();
+                loadData(currentPage);
+            } catch(e) {
+                alert(e.message);
             }
         }
 

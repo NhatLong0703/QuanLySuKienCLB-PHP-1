@@ -62,11 +62,16 @@ class ClubController extends BaseController {
     public function update() {
         if (!in_array($_SERVER['REQUEST_METHOD'], ['PUT', 'POST'])) return $this->json(['message'=>'Method Not Allowed'],405);
         $user = $this->requireCurrentUser();
-        if ($user['role'] !== 'admin' && $user['role'] !== 'organizer') return $this->json(['status'=>'error','message'=>'Ban khong co quyen'],403);
         
         $id = $_GET['id'] ?? 0;
         $c = $this->clubRepo->findById($id);
         if (!$c) return $this->json(['status'=>'error','message'=>'Khong tim thay CLB'],404);
+
+        if ($user['role'] !== 'admin') {
+            if ($user['role'] !== 'organizer' || !$this->clubManagerRepo->isManager($id, $user['id'])) {
+                return $this->json(['status'=>'error','message'=>'Ban khong co quyen tren CLB nay'],403);
+            }
+        }
 
         $d = $this->getInputData();
         $allowed = ['name','description','status'];
@@ -83,15 +88,20 @@ class ClubController extends BaseController {
     public function delete() {
         if ($_SERVER['REQUEST_METHOD']!=='DELETE') return $this->json(['message'=>'Method Not Allowed'],405);
         $user = $this->requireCurrentUser();
-        if ($user['role'] !== 'admin' && $user['role'] !== 'organizer') return $this->json(['status'=>'error','message'=>'Ban khong co quyen'],403);
         
         $id = $_GET['id'] ?? 0;
         $c = $this->clubRepo->findById($id);
         if (!$c) return $this->json(['status'=>'error','message'=>'Khong tim thay CLB'],404);
 
+        if ($user['role'] !== 'admin') {
+            if ($user['role'] !== 'organizer' || !$this->clubManagerRepo->isManager($id, $user['id'])) {
+                return $this->json(['status'=>'error','message'=>'Ban khong co quyen xoa CLB nay'],403);
+            }
+        }
+
         $this->clubRepo->delete($id);
         $this->logAudit($user['id'], 'Delete Club', 'clubs', $id, 'Deleted club ID: ' . $id);
-        return $this->json(['status'=>'success','message'=>'Da xoa CLB']);
+        return $this->json(['status'=>'success','message'=>'Xoa CLB thanh cong']);
     }
 
     // --- CLUB MEMBERSHIP ENDPOINTS ---
