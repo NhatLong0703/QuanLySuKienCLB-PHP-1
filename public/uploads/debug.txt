@@ -1,12 +1,12 @@
 POST: Array
 (
-    [title] => doanh lương 2 triệu 1
-    [club_id] => 10
-    [location] => Hồ Tây
-    [start_time] => 2026-09-07 16:00:00
-    [end_time] => 2026-09-09 16:00:00
-    [capacity] => 15
-    [registration_deadline] => 2026-09-07 16:00:00
+    [title] => Hội thao HNMU 2026
+    [club_id] => 2
+    [location] => HNMU CS2, Sóc Sơn
+    [start_time] => 2026-09-07 07:30:00
+    [end_time] => 2026-09-14 09:30:00
+    [capacity] => 50
+    [registration_deadline] => 2026-09-07 07:30:00
     [status] => open
 )
 
@@ -14,12 +14,12 @@ FILES: Array
 (
     [image] => Array
         (
-            [name] => Screenshot 2026-07-10 200224.png
-            [full_path] => Screenshot 2026-07-10 200224.png
-            [type] => image/png
-            [tmp_name] => C:\xampp\tmp\php6142.tmp
+            [name] => 729540236_1560327982383342_1216607033343353860_n.jpeg
+            [full_path] => 729540236_1560327982383342_1216607033343353860_n.jpeg
+            [type] => image/jpeg
+            [tmp_name] => /tmp/php0aauh0rrtgsb2hZZkDR
             [error] => 0
-            [size] => 17192
+            [size] => 372077
         )
 
 )
