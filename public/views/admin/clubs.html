@@ -56,14 +56,15 @@
 
         .club-desc { font-size: 13px; color: #6B7280; line-height: 1.5; margin-bottom: 24px; flex-grow: 1; }
 
-        .club-stats { display: flex; border-top: 1px solid #F3F4F6; padding-top: 16px; gap: 40px; }
+        .club-stats { display: flex; flex-wrap: wrap; border-top: 1px solid #F3F4F6; padding-top: 16px; gap: 16px 28px; }
         .stat-group { display: flex; flex-direction: column; }
         .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #9CA3AF; margin-bottom: 4px; }
         .stat-val { font-family: 'Inter', sans-serif; font-size: 20px; color: #111827; }
         .stat-val.text { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; margin-top: 4px; }
         
         /* Card Actions */
-        .card-actions { display: flex; gap: 6px; align-items: center; justify-content: flex-end; flex: 1; }
+        .card-actions { display: flex; flex: 1 0 100%; gap: 6px; align-items: center; justify-content: flex-start; min-width: 0; margin-top: 4px; }
+        .card-actions .btn { white-space: nowrap; }
         .icon-btn { width: 28px; height: 28px; border-radius: 4px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; opacity: 0; transition: opacity 0.2s; }
         .club-card:hover .icon-btn { opacity: 1; }
         .icon-edit { background: #E0E7FF; color: #4338CA; }

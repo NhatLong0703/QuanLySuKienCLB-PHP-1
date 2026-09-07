@@ -1,13 +1,13 @@
 POST: Array
 (
-    [title] => Hội thao HNMU 2026
-    [club_id] => 2
+    [title] => Trai he sinh vien 202
+    [club_id] => 1
     [location] => HNMU CS2, Sóc Sơn
-    [start_time] => 2026-09-07 07:30:00
-    [end_time] => 2026-09-14 09:30:00
+    [start_time] => 2026-09-08 11:42:00
+    [end_time] => 2026-09-11 10:42:00
     [capacity] => 50
-    [registration_deadline] => 2026-09-07 07:30:00
-    [status] => open
+    [registration_deadline] => 2026-09-07 22:00:00
+    [status] => draft
 )
 
 FILES: Array
@@ -17,7 +17,7 @@ FILES: Array
             [name] => 729540236_1560327982383342_1216607033343353860_n.jpeg
             [full_path] => 729540236_1560327982383342_1216607033343353860_n.jpeg
             [type] => image/jpeg
-            [tmp_name] => /tmp/php0aauh0rrtgsb2hZZkDR
+            [tmp_name] => /tmp/phpuuje3e9cqnsmf8RFMYd
             [error] => 0
             [size] => 372077
         )
