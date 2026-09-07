@@ -328,8 +328,9 @@
                             <span class="stat-val text">${managerName}</span>
                         </div>
                         <div class="card-actions">
-                            <button class="btn btn-outline" style="padding:4px 8px; font-size:12px; margin-right:5px;" onclick="openMembersModal(${club.id})">👥 Members</button>
+                            <button class="btn btn-outline" style="padding:4px 8px; font-size:12px;" onclick="openMembersModal(${club.id})">👥 Members</button>
                             <button class="icon-btn icon-edit" onclick="openModal(${club.id})" title="Edit">✏️</button>
+                            <button class="icon-btn icon-delete" onclick="deleteClub(${club.id})" title="Delete">🗑️</button>
                         </div>
                     </div>
                 </div>`;
